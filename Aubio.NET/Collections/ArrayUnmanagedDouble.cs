@@ -4,7 +4,8 @@
     {
         private readonly double* _data;
 
-        public ArrayUnmanagedDouble(double* data, int length) : base(length)
+        public ArrayUnmanagedDouble(double* data, int length) 
+            : base(length)
         {
             _data = data;
         }

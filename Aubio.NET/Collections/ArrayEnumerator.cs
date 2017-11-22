@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 
 namespace Aubio.NET.Collections
@@ -35,6 +36,7 @@ namespace Aubio.NET.Collections
             _index = -1;
         }
 
+        [SuppressMessage("ReSharper", "ConvertToAutoPropertyWithPrivateSetter")]
         public T Current => _current;
 
         object IEnumerator.Current => Current;
