@@ -163,7 +163,8 @@ namespace Aubio.NET.IO
         private static extern unsafe Source__* new_aubio_source(
             [MarshalAs(UnmanagedType.LPStr)] string uri,
             uint sampleRate,
-            uint hopSize);
+            uint hopSize
+            );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern void del_aubio_source(
