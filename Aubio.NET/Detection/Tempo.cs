@@ -71,7 +71,7 @@ namespace Aubio.NET.Detection
             set
             {
                 ThrowIfDisposed();
-                aubio_tempo_set_delay(this, value.Samples);
+                ThrowIfNot(aubio_tempo_set_delay(this, value.Samples));
             }
         }
 
@@ -132,7 +132,7 @@ namespace Aubio.NET.Detection
             set
             {
                 ThrowIfDisposed();
-                aubio_tempo_set_silence(this, value);
+                ThrowIfNot(aubio_tempo_set_silence(this, value));
             }
         }
 
@@ -162,7 +162,7 @@ namespace Aubio.NET.Detection
             set
             {
                 ThrowIfDisposed();
-                aubio_tempo_set_threshold(this, value);
+                ThrowIfNot(aubio_tempo_set_threshold(this, value));
             }
         }
 
