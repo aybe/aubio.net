@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security;
 using JetBrains.Annotations;
@@ -15,6 +16,8 @@ namespace Aubio.NET.Collections
         #region Fields
 
         private readonly IArray<float> _data;
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly unsafe FVec__* _vec;
 
         #endregion

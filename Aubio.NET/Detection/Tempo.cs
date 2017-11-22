@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Aubio.NET.Collections;
 using JetBrains.Annotations;
@@ -12,6 +13,7 @@ namespace Aubio.NET.Detection
     {
         #region Fields
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly unsafe Tempo__* _tempo;
 
         #endregion

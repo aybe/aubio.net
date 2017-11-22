@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 
@@ -11,6 +12,7 @@ namespace Aubio.NET
             // make this public object not inheritable
         }
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private bool IsDisposed { get; set; }
 
         public void Dispose()

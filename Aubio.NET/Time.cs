@@ -30,5 +30,10 @@ namespace Aubio.NET
         {
             return new Time(sampleRate, Converters.MillisecondsToSamples(sampleRate, milliseconds));
         }
+
+        public override string ToString()
+        {
+            return $"{nameof(Seconds)}: {Seconds}";
+        }
     }
 }

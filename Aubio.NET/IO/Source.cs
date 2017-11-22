@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Aubio.NET.Collections;
 using JetBrains.Annotations;
@@ -9,6 +10,7 @@ namespace Aubio.NET.IO
     {
         #region Fields
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly unsafe Source__* _source;
 
         #endregion
