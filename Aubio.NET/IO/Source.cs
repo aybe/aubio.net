@@ -60,12 +60,14 @@ namespace Aubio.NET.IO
         }
 
         [PublicAPI]
-        public int Duration
+        public Time Duration
         {
             get
             {
                 ThrowIfDisposed();
-                return aubio_source_get_duration(this).ToInt32();
+                var samples = aubio_source_get_duration(this).ToInt32();
+                var time = Time.FromSamples(SampleRate, samples);
+                return time;
             }
         }
 
