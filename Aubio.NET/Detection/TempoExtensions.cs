@@ -13,7 +13,7 @@ namespace Aubio.NET.Detection
             if (output == null)
                 throw new ArgumentNullException(nameof(output));
 
-            return !output[0].AlmostEquals(0.0f);
+            return !output[0].AreEqual(0.0f);
         }
     }
 }
