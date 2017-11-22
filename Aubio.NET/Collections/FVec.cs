@@ -101,12 +101,14 @@ namespace Aubio.NET.Collections
         [PublicAPI]
         public void SetAll(float value)
         {
+            ThrowIfDisposed();
             fvec_set_all(this, value);
         }
 
         [PublicAPI]
         public void Ones()
         {
+            ThrowIfDisposed();
             fvec_ones(this);
         }
 
@@ -138,6 +140,7 @@ namespace Aubio.NET.Collections
         [PublicAPI]
         public void Zeros()
         {
+            ThrowIfDisposed();
             fvec_zeros(this);
         }
 
