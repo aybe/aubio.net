@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aubio.NET", "Aubio.NET\Aubi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aubio.NET.TestTempo", "Aubio.NET.TestTempo\Aubio.NET.TestTempo.csproj", "{4A222C5F-FFDC-4D8F-8B8C-1445A3765305}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aubio.NET.TestNotes", "Aubio.NET.TestNotes\Aubio.NET.TestNotes.csproj", "{6E356B4C-E41A-4215-8543-4AC55FE2CA5A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{4A222C5F-FFDC-4D8F-8B8C-1445A3765305}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A222C5F-FFDC-4D8F-8B8C-1445A3765305}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A222C5F-FFDC-4D8F-8B8C-1445A3765305}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E356B4C-E41A-4215-8543-4AC55FE2CA5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E356B4C-E41A-4215-8543-4AC55FE2CA5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E356B4C-E41A-4215-8543-4AC55FE2CA5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E356B4C-E41A-4215-8543-4AC55FE2CA5A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
