@@ -12,7 +12,7 @@ namespace Aubio.NET.TestTempo
     internal static class Program
     {
         private static void Main(string[] args)
-        { 
+        {
             var uri = args[0];
 
             if (!File.Exists(uri))
@@ -35,22 +35,26 @@ namespace Aubio.NET.TestTempo
 
                     if (tempo.HasBeat(output))
                     {
-                        var last = tempo.Last;
+                        var seconds = tempo.LastBeat.Seconds;
                         var bpm = tempo.Bpm;
                         var confidence = tempo.Confidence;
+                        var period = tempo.Period.Seconds;
                         Console.WriteLine(
-                            $"{nameof(last)}: {last}, " +
+                            $"{nameof(seconds)}: {seconds:F3}, " +
                             $"{nameof(bpm)}: {bpm:F3}, " +
-                            $"{nameof(confidence)}: {confidence:F6}"
+                            $"{nameof(confidence)}: {confidence:F6}, " +
+                            $"{nameof(period)}: {period:F3}"
                         );
                     }
 
                     frames += read;
                 } while (read == hopSize);
             }
-            
+
             AubioUtils.Cleanup();
-            Console.ReadLine();
+
+            Console.WriteLine("Press any key to exit");
+            Console.ReadKey(true);
         }
     }
 }
