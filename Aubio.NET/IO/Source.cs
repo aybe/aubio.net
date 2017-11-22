@@ -82,10 +82,10 @@ namespace Aubio.NET.IO
         }
 
         [PublicAPI]
-        public bool Close()
+        public void Close()
         {
             ThrowIfDisposed();
-            return aubio_source_close(this);
+            ThrowIfNot(aubio_source_close(this));
         }
 
         [PublicAPI]
@@ -102,10 +102,14 @@ namespace Aubio.NET.IO
         }
 
         [PublicAPI]
-        public bool Seek(int position)
+        public void Seek(int position)
         {
             ThrowIfDisposed();
-            return aubio_source_seek(this, position.ToUInt32());
+
+            if (position < 0)
+                throw new ArgumentOutOfRangeException(nameof(position));
+
+            ThrowIfNot(aubio_source_seek(this, position.ToUInt32()));
         }
 
         #endregion
