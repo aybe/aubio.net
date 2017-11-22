@@ -57,47 +57,65 @@ namespace Aubio.NET.Detection
         }
 
         [PublicAPI]
-        public int Delay
+        public Time Delay
         {
             get
             {
                 ThrowIfDisposed();
-                return aubio_tempo_get_delay(this);
+                var samples = aubio_tempo_get_delay(this);
+                var time = Time.FromSamples(SampleRate, samples);
+                return time;
             }
             set
             {
                 ThrowIfDisposed();
-                aubio_tempo_set_delay(this, value);
+                aubio_tempo_set_delay(this, value.Samples);
             }
         }
 
         [PublicAPI]
-        public int Last
+        public Time LastBeat
         {
             get
             {
                 ThrowIfDisposed();
-                return aubio_tempo_get_last(this).ToInt32();
+                var samples = aubio_tempo_get_last(this).ToInt32();
+                var time = Time.FromSamples(SampleRate, samples);
+                return time;
             }
         }
 
         [PublicAPI]
-        public float LastTatum
+        public Time LastTatum
         {
             get
             {
                 ThrowIfDisposed();
-                return aubio_tempo_get_last_tatum(this);
+                var samples = aubio_tempo_get_last_tatum(this);
+                var time = Time.FromSamples(SampleRate, samples);
+                return time;
             }
         }
 
         [PublicAPI]
-        public float Period
+        public Time Period
         {
             get
             {
                 ThrowIfDisposed();
-                return aubio_tempo_get_period(this);
+                var samples = aubio_tempo_get_period(this);
+                var time = Time.FromSamples(SampleRate, samples);
+                return time;
+            }
+        }
+
+        [PublicAPI]
+        public int SampleRate
+        {
+            get
+            {
+                ThrowIfDisposed();
+                return aubio_tempo_get_samplerate(this).ToInt32();
             }
         }
 
@@ -117,12 +135,17 @@ namespace Aubio.NET.Detection
         }
 
         [PublicAPI]
-        public int TatumSignature // TODO get { }
+        public int TatumSignature
         {
+            get
+            {
+                ThrowIfDisposed();
+                return aubio_tempo_get_tatum_signature(this).ToInt32();
+            }
             set
             {
                 ThrowIfDisposed();
-                aubio_tempo_set_tatum_signature(this, value.ToUInt32());
+                ThrowIfNot(aubio_tempo_set_tatum_signature(this, value.ToUInt32()));
             }
         }
 
@@ -206,16 +229,25 @@ namespace Aubio.NET.Detection
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(TempoMarshaler))] Tempo instance);
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern float aubio_tempo_get_last_tatum(
+        private static extern int aubio_tempo_get_last_tatum(
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(TempoMarshaler))] Tempo instance);
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern float aubio_tempo_get_period(
+        private static extern int aubio_tempo_get_period(
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(TempoMarshaler))] Tempo instance);
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern float aubio_tempo_get_silence(
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(TempoMarshaler))] Tempo instance);
+
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern uint aubio_tempo_get_samplerate(
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(TempoMarshaler))] Tempo instance);
+
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern uint aubio_tempo_get_tatum_signature(
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(TempoMarshaler))] Tempo instance
+        );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern float aubio_tempo_get_threshold(
