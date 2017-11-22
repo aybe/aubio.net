@@ -40,6 +40,21 @@ namespace Aubio.NET.Detection
         #region Public Members
 
         [PublicAPI]
+        public float CentPrecision
+        {
+            get
+            {
+                ThrowIfDisposed();
+                return aubio_notes_get_cent_precision(this);
+            }
+            set
+            {
+                ThrowIfDisposed();
+                ThrowIfNot(aubio_notes_set_cent_precision(this, value));
+            }
+        }
+
+        [PublicAPI]
         public Time MinimumInterOnsetInterval
         {
             get
@@ -144,6 +159,12 @@ namespace Aubio.NET.Detection
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern float aubio_notes_get_cent_precision(
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NotesMarshaler))] Notes instance
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern float aubio_notes_get_silence(
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NotesMarshaler))] Notes instance
         );
@@ -152,6 +173,14 @@ namespace Aubio.NET.Detection
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern uint aubio_notes_get_samplerate(
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NotesMarshaler))] Notes instance
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool aubio_notes_set_cent_precision(
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NotesMarshaler))] Notes instance,
+            float precision
         );
 
         [SuppressUnmanagedCodeSecurity]
