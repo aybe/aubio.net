@@ -13,6 +13,7 @@ namespace Aubio.NET.Detection
     {
         #region Fields
 
+        [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly unsafe Tempo__* _tempo;
 
@@ -20,7 +21,7 @@ namespace Aubio.NET.Detection
 
         #region Constructors
 
-        internal unsafe Tempo(Tempo__* tempo)
+        internal unsafe Tempo([NotNull] Tempo__* tempo)
         {
             if (tempo == null)
                 throw new ArgumentNullException(nameof(tempo));

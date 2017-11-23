@@ -17,6 +17,7 @@ namespace Aubio.NET.Collections
 
         private readonly IArray<float> _data;
 
+        [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly unsafe FVec__* _vec;
 
@@ -24,7 +25,7 @@ namespace Aubio.NET.Collections
 
         #region Constructors
 
-        internal unsafe FVec(FVec__* vec)
+        internal unsafe FVec([NotNull] FVec__* vec)
         {
             if (vec == null)
                 throw new ArgumentNullException(nameof(vec));

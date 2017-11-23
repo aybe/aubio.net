@@ -14,6 +14,7 @@ namespace Aubio.NET.Detection
     {
         #region Fields
 
+        [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly unsafe Notes__* _notes;
 
@@ -21,7 +22,7 @@ namespace Aubio.NET.Detection
 
         #region Constructors
 
-        internal unsafe Notes(Notes__* notes)
+        internal unsafe Notes([NotNull] Notes__* notes)
         {
             if (notes == null)
                 throw new ArgumentNullException(nameof(notes));

@@ -10,6 +10,7 @@ namespace Aubio.NET.IO
     {
         #region Fields
 
+        [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly unsafe Source__* _source;
 
@@ -17,7 +18,7 @@ namespace Aubio.NET.IO
 
         #region Constructors
 
-        internal unsafe Source(Source__* source)
+        internal unsafe Source([NotNull] Source__* source)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
