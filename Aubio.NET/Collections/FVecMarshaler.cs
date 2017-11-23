@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 
@@ -6,7 +7,10 @@ namespace Aubio.NET.Collections
 {
     internal sealed class FVecMarshaler : ICustomMarshaler
     {
-        private static readonly FVecMarshaler Instance = new FVecMarshaler();
+        [SuppressMessage("ReSharper", "UnusedParameter.Local")]
+        private FVecMarshaler(string pstrCookie)
+        {
+        }
 
         public void CleanUpManagedData(object managedObj)
         {
@@ -16,9 +20,9 @@ namespace Aubio.NET.Collections
         {
         }
 
-        public unsafe int GetNativeDataSize()
+        public int GetNativeDataSize()
         {
-            return sizeof(FVec__);
+            throw new NotImplementedException(); // not needed
         }
 
         public IntPtr MarshalManagedToNative([NotNull] object managedObj)
@@ -26,18 +30,23 @@ namespace Aubio.NET.Collections
             if (managedObj == null)
                 throw new ArgumentNullException(nameof(managedObj));
 
-            return ((FVec)managedObj).ToPointer();
+            if (!(managedObj is FVec fVec))
+                throw new ArgumentNullException(nameof(fVec));
+
+            var pointer = fVec.ToPointer();
+
+            return pointer;
         }
 
-        public unsafe object MarshalNativeToManaged(IntPtr pNativeData)
+        public object MarshalNativeToManaged(IntPtr pNativeData)
         {
-            return new FVec((FVec__*)pNativeData);
+            throw new NotImplementedException(); // not needed
         }
 
         [UsedImplicitly]
         public static ICustomMarshaler GetInstance(string pstrCookie)
         {
-            return Instance;
+            return new FVecMarshaler(pstrCookie);
         }
     }
 }

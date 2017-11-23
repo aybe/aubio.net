@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 
@@ -6,7 +7,10 @@ namespace Aubio.NET.IO
 {
     internal sealed class SourceMarshaler : ICustomMarshaler
     {
-        private static readonly SourceMarshaler Instance = new SourceMarshaler();
+        [SuppressMessage("ReSharper", "UnusedParameter.Local")]
+        private SourceMarshaler(string pstrCookie)
+        {
+        }
 
         public void CleanUpManagedData(object managedObj)
         {
@@ -16,9 +20,9 @@ namespace Aubio.NET.IO
         {
         }
 
-        public unsafe int GetNativeDataSize()
+        public int GetNativeDataSize()
         {
-            return sizeof(Source__);
+            throw new NotImplementedException(); // not needed
         }
 
         public IntPtr MarshalManagedToNative([NotNull] object managedObj)
@@ -26,18 +30,23 @@ namespace Aubio.NET.IO
             if (managedObj == null)
                 throw new ArgumentNullException(nameof(managedObj));
 
-            return ((Source) managedObj).ToPointer();
+            if (!(managedObj is Source source))
+                throw new ArgumentNullException(nameof(source));
+
+            var pointer = source.ToPointer();
+
+            return pointer;
         }
 
-        public unsafe object MarshalNativeToManaged(IntPtr pNativeData)
+        public object MarshalNativeToManaged(IntPtr pNativeData)
         {
-            return new Source((Source__*) pNativeData);
+            throw new NotImplementedException(); // not needed
         }
 
         [UsedImplicitly]
         public static ICustomMarshaler GetInstance(string pstrCookie)
         {
-            return Instance;
+            return new SourceMarshaler(pstrCookie);
         }
     }
 }

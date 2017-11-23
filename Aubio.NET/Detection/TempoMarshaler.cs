@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 
@@ -6,7 +7,10 @@ namespace Aubio.NET.Detection
 {
     internal sealed class TempoMarshaler : ICustomMarshaler
     {
-        private static readonly TempoMarshaler Instance = new TempoMarshaler();
+        [SuppressMessage("ReSharper", "UnusedParameter.Local")]
+        private TempoMarshaler(string pstrCookie)
+        {
+        }
 
         public void CleanUpManagedData(object managedObj)
         {
@@ -16,9 +20,9 @@ namespace Aubio.NET.Detection
         {
         }
 
-        public unsafe int GetNativeDataSize()
+        public int GetNativeDataSize()
         {
-            return sizeof(Tempo__);
+            throw new NotImplementedException(); // not needed
         }
 
         public IntPtr MarshalManagedToNative([NotNull] object managedObj)
@@ -26,18 +30,23 @@ namespace Aubio.NET.Detection
             if (managedObj == null)
                 throw new ArgumentNullException(nameof(managedObj));
 
-            return ((Tempo) managedObj).ToPointer();
+            if (!(managedObj is Tempo tempo))
+                throw new ArgumentNullException(nameof(tempo));
+
+            var pointer = tempo.ToPointer();
+
+            return pointer;
         }
 
-        public unsafe object MarshalNativeToManaged(IntPtr pNativeData)
+        public object MarshalNativeToManaged(IntPtr pNativeData)
         {
-            return new Tempo((Tempo__*) pNativeData);
+            throw new NotImplementedException(); // not needed
         }
 
         [UsedImplicitly]
         public static ICustomMarshaler GetInstance(string pstrCookie)
         {
-            return Instance;
+            return new TempoMarshaler(pstrCookie);
         }
     }
 }
