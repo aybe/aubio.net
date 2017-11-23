@@ -20,7 +20,7 @@ namespace Aubio.NET.TestPitch
 
             const int winSize = 1024;
             const int hopSize = winSize / 4;
-            
+
             using (var source = new Source(uri, 0, hopSize))
             using (var input = new FVec(hopSize))
             using (var output = new FVec(1))
@@ -37,7 +37,7 @@ namespace Aubio.NET.TestPitch
                 );
 
                 int read;
-                int frames = 0;
+                var frames = 0;
                 do
                 {
                     source.Do(input, out read);
@@ -56,7 +56,7 @@ namespace Aubio.NET.TestPitch
 
             AubioUtils.Cleanup();
 
-            Console.WriteLine("Press any key to exit");
+            Console.WriteLine("Press any key to exit !");
             Console.ReadKey(true);
         }
     }

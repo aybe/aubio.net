@@ -35,12 +35,14 @@ namespace Aubio.NET.TestTempo
 
                     if (tempo.HasBeat(output))
                     {
-                        var seconds = tempo.LastBeat.Seconds;
+                        var seconds = source.SamplesToSeconds(frames);
+                        var beat = tempo.LastBeat;
                         var bpm = tempo.Bpm;
                         var confidence = tempo.Confidence;
                         var period = tempo.Period.Seconds;
                         Console.WriteLine(
                             $"{nameof(seconds)}: {seconds:F3}, " +
+                            $"{nameof(beat)}: {beat.Seconds:F3}, " +
                             $"{nameof(bpm)}: {bpm:F3}, " +
                             $"{nameof(confidence)}: {confidence:F6}, " +
                             $"{nameof(period)}: {period:F3}"
@@ -53,7 +55,7 @@ namespace Aubio.NET.TestTempo
 
             AubioUtils.Cleanup();
 
-            Console.WriteLine("Press any key to exit");
+            Console.WriteLine("Press any key to exit !");
             Console.ReadKey(true);
         }
     }
