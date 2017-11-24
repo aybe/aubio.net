@@ -84,16 +84,6 @@ namespace Aubio.NET.Vectors
                 throw new IndexOutOfRangeException();
         }
 
-        public IEnumerator<CVecComplex> GetEnumerator()
-        {
-            return new VectorEnumerator<CVecComplex>(this);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         [PublicAPI]
         public void Copy([NotNull] CVec target)
         {
@@ -132,6 +122,16 @@ namespace Aubio.NET.Vectors
         public void Zeros()
         {
             cvec_zeros(this);
+        }
+
+        public IEnumerator<CVecComplex> GetEnumerator()
+        {
+            return new VectorEnumerator<CVecComplex>(this);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         #endregion

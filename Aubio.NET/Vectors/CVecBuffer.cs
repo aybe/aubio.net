@@ -31,6 +31,12 @@ namespace Aubio.NET.Vectors
             return GetEnumerator();
         }
 
+        public abstract void SetAll(float value);
+
+        public abstract void Ones();
+
+        public abstract void Zeros();
+
         protected void ThrowOnInvalidIndex(int index)
         {
             if (index < 0 || index >= Length)
@@ -38,11 +44,5 @@ namespace Aubio.NET.Vectors
         }
 
         public abstract unsafe float* GetData();
-
-        public abstract void SetAll(float value);
-
-        public abstract void Ones();
-
-        public abstract void Zeros();
     }
 }
