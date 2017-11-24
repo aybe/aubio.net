@@ -92,6 +92,12 @@ namespace Aubio.NET.Vectors
         }
 
         [PublicAPI]
+        public unsafe float* GetData()
+        {
+            return fvec_get_data(this);
+        }
+
+        [PublicAPI]
         public void Rev()
         {
             fvec_rev(this);
@@ -101,6 +107,12 @@ namespace Aubio.NET.Vectors
         public void SetAll(float value)
         {
             fvec_set_all(this, value);
+        }
+
+        [PublicAPI]
+        public void Print()
+        {
+            fvec_print(this);
         }
 
         [PublicAPI]
