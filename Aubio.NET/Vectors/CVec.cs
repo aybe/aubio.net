@@ -73,10 +73,10 @@ namespace Aubio.NET.Vectors
         public unsafe int Length => _cVec->Length.ToInt32();
 
         [PublicAPI]
-        public CVecBuffer Norm { get; }
+        public IVector<float> Norm { get; }
 
         [PublicAPI]
-        public CVecBuffer Phas { get; }
+        public IVector<float> Phas { get; }
 
         private void ThrowOnInvalidIndex(int index)
         {
@@ -114,6 +114,18 @@ namespace Aubio.NET.Vectors
         public void Print()
         {
             cvec_print(this);
+        }
+
+        public void SetAll(CVecComplex complex)
+        {
+            Norm.SetAll(complex.Norm);
+            Phas.SetAll(complex.Phas);
+        }
+
+        public void Ones()
+        {
+            Norm.Ones();
+            Phas.Ones();
         }
 
         [PublicAPI]

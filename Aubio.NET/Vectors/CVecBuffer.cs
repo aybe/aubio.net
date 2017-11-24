@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 
 namespace Aubio.NET.Vectors
 {
-    public abstract class CVecBuffer : IVector<float>
+    internal abstract class CVecBuffer : IVector<float>
     {
         internal unsafe CVecBuffer([NotNull] CVec cVec, [NotNull] float* data, int length)
         {
