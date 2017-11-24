@@ -16,8 +16,6 @@ namespace Aubio.NET.Vectors
     {
         #region Fields
 
-        private readonly IVector<float> _data;
-
         [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly unsafe FVec__* _vec;
@@ -32,7 +30,6 @@ namespace Aubio.NET.Vectors
                 throw new ArgumentNullException(nameof(vec));
 
             _vec = vec;
-            _data = new VectorUnmanagedFloat(vec->Data, vec->Length.ToInt32());
         }
 
         [PublicAPI]
@@ -47,12 +44,19 @@ namespace Aubio.NET.Vectors
 
         public float this[int index]
         {
-            // bounds checked in implementation
-            get => _data[index];
-            set => _data[index] = value;
+            get
+            {
+                ThrowOnInvalidIndex(index);
+                return fvec_get_sample(this, index.ToUInt32());
+            }
+            set
+            {
+                ThrowOnInvalidIndex(index);
+                fvec_set_sample(this, value, index.ToUInt32());
+            }
         }
 
-        public int Length => _data.Length;
+        public unsafe int Length => _vec->Length.ToInt32();
 
         IEnumerator IEnumerable.GetEnumerator()
         {
@@ -61,7 +65,13 @@ namespace Aubio.NET.Vectors
 
         public IEnumerator<float> GetEnumerator()
         {
-            return _data.GetEnumerator();
+            return new VectorEnumerator<float>(this);
+        }
+
+        private void ThrowOnInvalidIndex(int index)
+        {
+            if (index < 0 || index >= Length)
+                throw new IndexOutOfRangeException();
         }
 
         #endregion
