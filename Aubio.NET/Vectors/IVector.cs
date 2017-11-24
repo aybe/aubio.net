@@ -8,5 +8,8 @@ namespace Aubio.NET.Vectors
     {
         T this[int index] { get; set; }
         int Length { get; }
+        void SetAll(T value);
+        void Ones();
+        void Zeros();
     }
 }
