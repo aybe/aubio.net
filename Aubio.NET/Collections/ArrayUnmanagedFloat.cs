@@ -1,6 +1,6 @@
 namespace Aubio.NET.Collections
 {
-    internal sealed unsafe class ArrayUnmanagedFloat : ArrayUnmanaged<float>
+    public unsafe class ArrayUnmanagedFloat : ArrayUnmanaged<float>
     {
         private readonly float* _data;
 

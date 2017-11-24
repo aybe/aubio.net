@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Aubio.NET.Collections
 {
-    internal abstract class ArrayUnmanaged<T> : IArray<T>
+    public abstract class ArrayUnmanaged<T> : IArray<T>
     {
         private readonly int _length;
 

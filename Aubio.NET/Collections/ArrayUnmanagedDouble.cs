@@ -1,6 +1,6 @@
 ﻿namespace Aubio.NET.Collections
 {
-    internal sealed unsafe class ArrayUnmanagedDouble : ArrayUnmanaged<double>
+    public sealed unsafe class ArrayUnmanagedDouble : ArrayUnmanaged<double>
     {
         private readonly double* _data;
 

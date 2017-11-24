@@ -13,7 +13,7 @@ namespace Aubio.NET
         }
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private bool IsDisposed { get; set; }
+        internal bool IsDisposed { get; private set; }
 
         public void Dispose()
         {
