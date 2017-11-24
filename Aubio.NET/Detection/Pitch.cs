@@ -42,7 +42,6 @@ namespace Aubio.NET.Detection
         {
             get
             {
-                ThrowIfDisposed();
                 return aubio_pitch_get_confidence(this);
             }
         }
@@ -52,12 +51,10 @@ namespace Aubio.NET.Detection
         {
             get
             {
-                ThrowIfDisposed();
                 return aubio_pitch_get_silence(this);
             }
             set
             {
-                ThrowIfDisposed();
                 ThrowIfNot(aubio_pitch_set_silence(this, value));
             }
         }
@@ -67,12 +64,10 @@ namespace Aubio.NET.Detection
         {
             get
             {
-                ThrowIfDisposed();
                 return aubio_pitch_get_tolerance(this);
             }
             set
             {
-                ThrowIfDisposed();
                 ThrowIfNot(aubio_pitch_set_tolerance(this, value));
             }
         }
@@ -82,12 +77,10 @@ namespace Aubio.NET.Detection
         {
             get
             {
-                ThrowIfDisposed();
                 return aubio_pitch_get_mode(this);
             }
             set
             {
-                ThrowIfDisposed();
                 aubio_pitch_set_mode(this, value);
             }
         }
@@ -95,8 +88,6 @@ namespace Aubio.NET.Detection
         [PublicAPI]
         public void Do([NotNull] FVec input, [NotNull] FVec output)
         {
-            ThrowIfDisposed();
-
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
@@ -136,40 +127,40 @@ namespace Aubio.NET.Detection
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern void del_aubio_pitch(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(PitchMarshaler))] Pitch pitch
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Pitch pitch
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern void aubio_pitch_do(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(PitchMarshaler))] Pitch pitch,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(FVecMarshaler))] FVec input,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(FVecMarshaler))] FVec output
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Pitch pitch,
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec input,
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec output
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern float aubio_pitch_get_confidence(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(PitchMarshaler))] Pitch pitch
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Pitch pitch
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern float aubio_pitch_get_silence(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(PitchMarshaler))] Pitch pitch
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Pitch pitch
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern float aubio_pitch_get_tolerance(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(PitchMarshaler))] Pitch pitch
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Pitch pitch
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool aubio_pitch_set_silence(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(PitchMarshaler))] Pitch pitch,
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Pitch pitch,
             float silence
         );
 
@@ -177,20 +168,20 @@ namespace Aubio.NET.Detection
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool aubio_pitch_set_tolerance(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(PitchMarshaler))] Pitch pitch,
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Pitch pitch,
             float tolerance
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern PitchUnit aubio_pitch_get_mode(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(PitchMarshaler))] Pitch pitch
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Pitch pitch
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern void aubio_pitch_set_mode(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(PitchMarshaler))] Pitch pitch,
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Pitch pitch,
             [MarshalAs(UnmanagedType.I4)] PitchUnit unit
         );
 
