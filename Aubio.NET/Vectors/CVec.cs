@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Security;
-using Aubio.NET.Vectors.Native;
 using JetBrains.Annotations;
 
 namespace Aubio.NET.Vectors

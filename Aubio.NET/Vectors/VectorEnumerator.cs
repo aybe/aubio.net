@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 
-namespace Aubio.NET.Vectors.Native
+namespace Aubio.NET.Vectors
 {
     internal sealed class VectorEnumerator<T> : IEnumerator<T>
     {

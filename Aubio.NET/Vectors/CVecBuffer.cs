@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Aubio.NET.Vectors.Native;
 using JetBrains.Annotations;
 
 namespace Aubio.NET.Vectors
