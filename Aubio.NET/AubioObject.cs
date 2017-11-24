@@ -46,13 +46,6 @@ namespace Aubio.NET
         }
 
         [PublicAPI]
-        protected void ThrowIfDisposed()
-        {
-            if (IsDisposed)
-                throw new ObjectDisposedException(GetType().Name);
-        }
-
-        [PublicAPI]
         protected void ThrowIfNot(bool condition, [CanBeNull] string message = null)
         {
             if (!condition)

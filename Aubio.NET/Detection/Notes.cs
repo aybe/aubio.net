@@ -45,12 +45,10 @@ namespace Aubio.NET.Detection
         {
             get
             {
-                ThrowIfDisposed();
                 return aubio_notes_get_cent_precision(this);
             }
             set
             {
-                ThrowIfDisposed();
                 ThrowIfNot(aubio_notes_set_cent_precision(this, value));
             }
         }
@@ -60,14 +58,12 @@ namespace Aubio.NET.Detection
         {
             get
             {
-                ThrowIfDisposed();
                 var milliseconds = aubio_notes_get_minioi_ms(this);
                 var time = Time.FromMilliseconds(SampleRate, milliseconds);
                 return time;
             }
             set
             {
-                ThrowIfDisposed();
                 ThrowIfNot(aubio_notes_set_minioi_ms(this, value.Milliseconds));
             }
         }
@@ -77,7 +73,6 @@ namespace Aubio.NET.Detection
         {
             get
             {
-                ThrowIfDisposed();
                 return aubio_notes_get_samplerate(this).ToInt32();
             }
         }
@@ -87,12 +82,10 @@ namespace Aubio.NET.Detection
         {
             get
             {
-                ThrowIfDisposed();
                 return aubio_notes_get_silence(this);
             }
             set
             {
-                ThrowIfDisposed();
                 ThrowIfNot(aubio_notes_set_silence(this, value));
             }
         }
@@ -100,8 +93,6 @@ namespace Aubio.NET.Detection
         [PublicAPI]
         public void Do([NotNull] FVec input, [NotNull] FVec output)
         {
-            ThrowIfDisposed();
-
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
@@ -141,46 +132,46 @@ namespace Aubio.NET.Detection
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern void del_aubio_notes(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NotesMarshaler))] Notes instance
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Notes instance
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern void aubio_notes_do(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NotesMarshaler))] Notes instance,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(FVecMarshaler))] FVec input,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(FVecMarshaler))] FVec output
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Notes instance,
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec input,
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec output
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern float aubio_notes_get_minioi_ms(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NotesMarshaler))] Notes instance
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Notes instance
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern float aubio_notes_get_cent_precision(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NotesMarshaler))] Notes instance
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Notes instance
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern float aubio_notes_get_silence(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NotesMarshaler))] Notes instance
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Notes instance
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern uint aubio_notes_get_samplerate(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NotesMarshaler))] Notes instance
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Notes instance
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool aubio_notes_set_cent_precision(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NotesMarshaler))] Notes instance,
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Notes instance,
             float precision
         );
 
@@ -188,7 +179,7 @@ namespace Aubio.NET.Detection
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool aubio_notes_set_minioi_ms(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NotesMarshaler))] Notes instance,
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Notes instance,
             float minioi
         );
 
@@ -196,7 +187,7 @@ namespace Aubio.NET.Detection
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool aubio_notes_set_silence(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NotesMarshaler))] Notes instance,
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Notes instance,
             float silence
         );
 
