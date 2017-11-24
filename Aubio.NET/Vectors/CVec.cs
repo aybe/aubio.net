@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Security;
+using Aubio.NET.Vectors.Native;
 using JetBrains.Annotations;
 
 namespace Aubio.NET.Vectors
 {
-    public sealed class CVec : AubioObject
+    public sealed class CVec : AubioObject, IVector<CVecComplex>
     {
         #region Fields
 
@@ -49,6 +52,24 @@ namespace Aubio.NET.Vectors
 
         #region Public members
 
+        public CVecComplex this[int index]
+        {
+            get
+            {
+                ThrowOnInvalidIndex(index);
+                var norm = Norm[index];
+                var phas = Phas[index];
+                var complex = new CVecComplex(norm, phas);
+                return complex;
+            }
+            set
+            {
+                ThrowOnInvalidIndex(index);
+                Norm[index] = value.Norm;
+                Phas[index] = value.Phas;
+            }
+        }
+
         [PublicAPI]
         public unsafe int Length => _cVec->Length.ToInt32();
 
@@ -57,6 +78,22 @@ namespace Aubio.NET.Vectors
 
         [PublicAPI]
         public CVecBuffer Phas { get; }
+
+        private void ThrowOnInvalidIndex(int index)
+        {
+            if (index < 0 || index >= Length)
+                throw new IndexOutOfRangeException();
+        }
+
+        public IEnumerator<CVecComplex> GetEnumerator()
+        {
+            return new VectorEnumerator<CVecComplex>(this);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
 
         [PublicAPI]
         public void Copy([NotNull] CVec target)
