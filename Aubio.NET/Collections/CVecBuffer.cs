@@ -16,6 +16,8 @@ namespace Aubio.NET.Collections
 
         protected CVec CVec { get; }
 
+        public abstract unsafe float* GetData();
+
         public abstract void SetAll(float value);
 
         public abstract void Ones();

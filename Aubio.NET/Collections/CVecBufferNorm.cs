@@ -26,6 +26,11 @@ namespace Aubio.NET.Collections
             }
         }
 
+        public override unsafe float* GetData()
+        {
+            return cvec_norm_get_data(CVec);
+        }
+
         public override void SetAll(float value)
         {
             cvec_norm_set_all(CVec, value);
