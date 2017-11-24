@@ -4,18 +4,19 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security;
+using Aubio.NET.Vectors.Native;
 using JetBrains.Annotations;
 
-namespace Aubio.NET.Collections
+namespace Aubio.NET.Vectors
 {
     /// <summary>
     ///     https://aubio.org/doc/latest/fvec_8h.html
     /// </summary>
-    public sealed class FVec : AubioObject, IArray<float>
+    public sealed class FVec : AubioObject, IVector<float>
     {
         #region Fields
 
-        private readonly IArray<float> _data;
+        private readonly IVector<float> _data;
 
         [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -31,7 +32,7 @@ namespace Aubio.NET.Collections
                 throw new ArgumentNullException(nameof(vec));
 
             _vec = vec;
-            _data = new ArrayUnmanagedFloat(vec->Data, vec->Length.ToInt32());
+            _data = new VectorUnmanagedFloat(vec->Data, vec->Length.ToInt32());
         }
 
         [PublicAPI]
@@ -42,7 +43,7 @@ namespace Aubio.NET.Collections
 
         #endregion
 
-        #region IArray<float> Members
+        #region IVector<float> Members
 
         public float this[int index]
         {

@@ -1,9 +1,10 @@
 ﻿using System;
+using Aubio.NET.Vectors.Native;
 using JetBrains.Annotations;
 
-namespace Aubio.NET.Collections
+namespace Aubio.NET.Vectors
 {
-    public abstract class CVecBuffer : ArrayUnmanagedFloat
+    public abstract class CVecBuffer : VectorUnmanagedFloat
     {
         internal unsafe CVecBuffer([NotNull] CVec cVec, [NotNull] float* data, int length)
             : base(data, length)

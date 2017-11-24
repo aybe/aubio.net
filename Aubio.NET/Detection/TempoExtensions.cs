@@ -1,5 +1,5 @@
 ﻿using System;
-using Aubio.NET.Collections;
+using Aubio.NET.Vectors;
 
 namespace Aubio.NET.Detection
 {

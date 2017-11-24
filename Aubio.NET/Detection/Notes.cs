@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security;
-using Aubio.NET.Collections;
+using Aubio.NET.Vectors;
 using JetBrains.Annotations;
 
 namespace Aubio.NET.Detection

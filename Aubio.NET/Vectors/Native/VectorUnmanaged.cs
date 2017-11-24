@@ -3,17 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Aubio.NET.Collections
+namespace Aubio.NET.Vectors.Native
 {
-    public abstract class ArrayUnmanaged<T> : IArray<T>
+    public abstract class VectorUnmanaged<T> : IVector<T>
     {
         private readonly int _length;
 
-        protected ArrayUnmanaged(int length)
+        protected VectorUnmanaged(int length)
         {
             _length = length;
         }
-        
+
         public abstract T this[int index] { get; set; }
 
         [SuppressMessage("ReSharper", "ConvertToAutoPropertyWhenPossible")]
@@ -21,7 +21,7 @@ namespace Aubio.NET.Collections
 
         public IEnumerator<T> GetEnumerator()
         {
-            return new ArrayEnumerator<T>(this);
+            return new VectorEnumerator<T>(this);
         }
 
         IEnumerator IEnumerable.GetEnumerator()

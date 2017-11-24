@@ -4,17 +4,17 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 
-namespace Aubio.NET.Collections
+namespace Aubio.NET.Vectors.Native
 {
-    internal sealed class ArrayEnumerator<T> : IEnumerator<T>
+    internal sealed class VectorEnumerator<T> : IEnumerator<T>
     {
-        private readonly IArray<T> _array;
+        private readonly IVector<T> _vector;
         private T _current;
         private int _index;
 
-        public ArrayEnumerator([NotNull] IArray<T> array)
+        public VectorEnumerator([NotNull] IVector<T> vector)
         {
-            _array = array ?? throw new ArgumentNullException(nameof(array));
+            _vector = vector ?? throw new ArgumentNullException(nameof(vector));
             Reset();
         }
 
@@ -24,10 +24,10 @@ namespace Aubio.NET.Collections
 
         public bool MoveNext()
         {
-            if (++_index >= _array.Length)
+            if (++_index >= _vector.Length)
                 return false;
 
-            _current = _array[_index];
+            _current = _vector[_index];
             return true;
         }
 

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace Aubio.NET.Collections
+namespace Aubio.NET.Vectors
 {
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     internal struct CVec__

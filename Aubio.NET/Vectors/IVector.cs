@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 
-namespace Aubio.NET.Collections
+namespace Aubio.NET.Vectors
 {
     [PublicAPI]
-    public interface IArray<T> : IEnumerable<T>
+    public interface IVector<T> : IEnumerable<T>
     {
         T this[int index] { get; set; }
         int Length { get; }

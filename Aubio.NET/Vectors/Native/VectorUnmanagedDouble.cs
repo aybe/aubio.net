@@ -1,16 +1,16 @@
-namespace Aubio.NET.Collections
+﻿namespace Aubio.NET.Vectors.Native
 {
-    public unsafe class ArrayUnmanagedFloat : ArrayUnmanaged<float>
+    public sealed unsafe class VectorUnmanagedDouble : VectorUnmanaged<double>
     {
-        private readonly float* _data;
+        private readonly double* _data;
 
-        public ArrayUnmanagedFloat(float* data, int length) 
+        public VectorUnmanagedDouble(double* data, int length)
             : base(length)
         {
             _data = data;
         }
 
-        public override float this[int index]
+        public override double this[int index]
         {
             get
             {

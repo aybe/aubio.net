@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using JetBrains.Annotations;
 
-namespace Aubio.NET.Collections
+namespace Aubio.NET.Vectors
 {
     public sealed class CVec : AubioObject
     {

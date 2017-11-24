@@ -3,11 +3,11 @@ using System.Runtime.InteropServices;
 using System.Security;
 using JetBrains.Annotations;
 
-namespace Aubio.NET.Collections
+namespace Aubio.NET.Vectors
 {
-    internal sealed class CVecBufferNorm : CVecBuffer
+    internal sealed class CVecBufferPhas : CVecBuffer
     {
-        public unsafe CVecBufferNorm([NotNull] CVec cVec, [NotNull] float* data, int length)
+        public unsafe CVecBufferPhas([NotNull] CVec cVec, [NotNull] float* data, int length)
             : base(cVec, data, length)
         {
         }
@@ -17,64 +17,64 @@ namespace Aubio.NET.Collections
             get
             {
                 ThrowOnInvalidIndex(index);
-                return cvec_norm_get_sample(CVec, index.ToUInt32());
+                return cvec_phas_get_sample(CVec, index.ToUInt32());
             }
             set
             {
                 ThrowOnInvalidIndex(index);
-                cvec_norm_set_sample(CVec, value, index.ToUInt32());
+                cvec_phas_set_sample(CVec, value, index.ToUInt32());
             }
         }
 
         public override unsafe float* GetData()
         {
-            return cvec_norm_get_data(CVec);
+            return cvec_phas_get_data(CVec);
         }
 
         public override void SetAll(float value)
         {
-            cvec_norm_set_all(CVec, value);
+            cvec_phas_set_all(CVec, value);
         }
 
         public override void Ones()
         {
-            cvec_norm_ones(CVec);
+            cvec_phas_ones(CVec);
         }
 
         public override void Zeros()
         {
-            cvec_norm_zeros(CVec);
+            cvec_phas_zeros(CVec);
         }
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern unsafe float* cvec_norm_get_data(
+        private static extern unsafe float* cvec_phas_get_data(
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec cVec
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern float cvec_norm_get_sample(
+        private static extern float cvec_phas_get_sample(
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec cVec,
             uint position
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void cvec_norm_ones(
+        private static extern void cvec_phas_ones(
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec cVec
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void cvec_norm_set_all(
+        private static extern void cvec_phas_set_all(
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec cVec,
             float value
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void cvec_norm_set_sample(
+        private static extern void cvec_phas_set_sample(
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec cVec,
             float value,
             uint position
@@ -82,7 +82,7 @@ namespace Aubio.NET.Collections
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void cvec_norm_zeros(
+        private static extern void cvec_phas_zeros(
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec cVec
         );
     }
