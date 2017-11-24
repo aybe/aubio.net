@@ -21,7 +21,7 @@ namespace Aubio.NET.Collections
 
             _cVec = cVec;
             Norm = new CVecBufferNorm(this, cVec->Norm, cVec->Length.ToInt32());
-            Phas = new CVecBufferNorm(this, cVec->Norm, cVec->Length.ToInt32());
+            Phas = new CVecBufferPhas(this, cVec->Phas, cVec->Length.ToInt32());
         }
 
         [PublicAPI]
