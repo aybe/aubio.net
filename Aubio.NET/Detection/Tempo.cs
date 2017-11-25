@@ -21,7 +21,7 @@ namespace Aubio.NET.Detection
 
         #region Constructors
 
-        internal unsafe Tempo([NotNull] Tempo__* tempo)
+        private unsafe Tempo([NotNull] Tempo__* tempo)
         {
             if (tempo == null)
                 throw new ArgumentNullException(nameof(tempo));

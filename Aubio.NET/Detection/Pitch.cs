@@ -19,7 +19,7 @@ namespace Aubio.NET.Detection
 
         #region Constructors
 
-        internal unsafe Pitch([NotNull] Pitch__* pitch)
+        private unsafe Pitch([NotNull] Pitch__* pitch)
         {
             if (pitch == null)
                 throw new ArgumentNullException(nameof(pitch));

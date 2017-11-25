@@ -18,7 +18,7 @@ namespace Aubio.NET.IO
 
         #region Constructors
 
-        internal unsafe Source([NotNull] Source__* source)
+        private unsafe Source([NotNull] Source__* source)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));

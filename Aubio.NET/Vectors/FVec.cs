@@ -23,7 +23,7 @@ namespace Aubio.NET.Vectors
 
         #region Constructors
 
-        internal unsafe FVec([NotNull] FVec__* vec, bool isDisposable)
+        private unsafe FVec([NotNull] FVec__* vec, bool isDisposable)
             : base(isDisposable)
         {
             if (vec == null)

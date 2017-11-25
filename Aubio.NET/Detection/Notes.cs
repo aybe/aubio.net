@@ -22,7 +22,7 @@ namespace Aubio.NET.Detection
 
         #region Constructors
 
-        internal unsafe Notes([NotNull] Notes__* notes)
+        private unsafe Notes([NotNull] Notes__* notes)
         {
             if (notes == null)
                 throw new ArgumentNullException(nameof(notes));

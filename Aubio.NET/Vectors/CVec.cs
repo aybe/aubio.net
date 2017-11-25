@@ -17,7 +17,7 @@ namespace Aubio.NET.Vectors
 
         #region Constructors
 
-        internal unsafe CVec([NotNull] CVec__* cVec)
+        private unsafe CVec([NotNull] CVec__* cVec)
         {
             if (cVec == null)
                 throw new ArgumentNullException(nameof(cVec));

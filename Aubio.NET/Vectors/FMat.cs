@@ -21,7 +21,7 @@ namespace Aubio.NET.Vectors
 
         #region Constructors
 
-        internal unsafe FMat([NotNull] FMat__* fMat)
+        private unsafe FMat([NotNull] FMat__* fMat)
         {
             if (fMat == null)
                 throw new ArgumentNullException(nameof(fMat));
