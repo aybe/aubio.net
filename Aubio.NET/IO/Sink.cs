@@ -41,7 +41,7 @@ namespace Aubio.NET.IO
         public int Channels => aubio_sink_get_channels(this).ToInt32();
 
         [PublicAPI]
-        public int SampleRate => aubio_sink_get_sample_rate(this).ToInt32();
+        public int SampleRate => aubio_sink_get_samplerate(this).ToInt32();
 
         [PublicAPI]
         public bool Close()
@@ -79,7 +79,7 @@ namespace Aubio.NET.IO
             if (channels <= 0)
                 throw new ArgumentOutOfRangeException(nameof(channels));
 
-            return aubio_sink_preset_channels(this, channels.ToUInt32());
+            return !aubio_sink_preset_channels(this, channels.ToUInt32());
         }
 
         [PublicAPI]
@@ -88,7 +88,7 @@ namespace Aubio.NET.IO
             if (sampleRate <= 0)
                 throw new ArgumentOutOfRangeException(nameof(sampleRate));
 
-            return aubio_sink_preset_sample_rate(this, sampleRate.ToUInt32());
+            return !aubio_sink_preset_samplerate(this, sampleRate.ToUInt32());
         }
 
         #endregion
@@ -154,7 +154,7 @@ namespace Aubio.NET.IO
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern uint aubio_sink_get_sample_rate(
+        private static extern uint aubio_sink_get_samplerate(
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Sink sink
         );
 
@@ -169,7 +169,7 @@ namespace Aubio.NET.IO
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_sink_preset_sample_rate(
+        private static extern bool aubio_sink_preset_samplerate(
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Sink sink,
             uint sampleRate
         );
