@@ -56,6 +56,12 @@ namespace Aubio.NET.Vectors
             return GetEnumerator();
         }
 
+        [PublicAPI]
+        public unsafe double* GetData()
+        {
+            return lvec_get_data(this);
+        }
+
         public void SetAll(double value)
         {
             lvec_set_all(this, (float) value);
