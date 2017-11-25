@@ -25,7 +25,7 @@ namespace Aubio.NET.IO
 
             _source = source;
         }
-        
+
         [PublicAPI]
         public unsafe Source(string uri, int sampleRate, int hopSize)
             : this(new_aubio_source(uri, sampleRate.ToUInt32(), hopSize.ToUInt32()))
@@ -51,13 +51,7 @@ namespace Aubio.NET.IO
         #region Public Members
 
         [PublicAPI]
-        public int Channels
-        {
-            get
-            {
-                return aubio_source_get_channels(this).ToInt32();
-            }
-        }
+        public int Channels => aubio_source_get_channels(this).ToInt32();
 
         [PublicAPI]
         public Time Duration
@@ -71,13 +65,7 @@ namespace Aubio.NET.IO
         }
 
         [PublicAPI]
-        public int SampleRate
-        {
-            get
-            {
-                return aubio_source_get_samplerate(this).ToInt32();
-            }
-        }
+        public int SampleRate => aubio_source_get_samplerate(this).ToInt32();
 
         [PublicAPI]
         public void Close()
