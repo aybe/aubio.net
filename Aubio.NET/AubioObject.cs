@@ -55,7 +55,7 @@ namespace Aubio.NET
         }
 
         [PublicAPI]
-        protected void ThrowIfNot(bool condition, [CanBeNull] string message = null)
+        protected internal void ThrowIfNot(bool condition, [CanBeNull] string message = null)
         {
             if (!condition)
                 return;

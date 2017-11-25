@@ -155,6 +155,14 @@ namespace Aubio.NET.Vectors
             return fvec_clamp(fVec, absmax);
         }
 
+        public static void SetWindow([NotNull] this FVec fVec, FVecWindowType windowType)
+        {
+            if (fVec == null)
+                throw new ArgumentNullException(nameof(fVec));
+
+            fVec.ThrowIfNot(fvec_set_window2(fVec, windowType));
+        }
+
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern void fvec_exp(
@@ -260,6 +268,14 @@ namespace Aubio.NET.Vectors
         private static extern float fvec_clamp(
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec vec,
             float absmax
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool fvec_set_window2(
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec vec,
+            [MarshalAs(UnmanagedType.I4)] FVecWindowType windowType
         );
     }
 }

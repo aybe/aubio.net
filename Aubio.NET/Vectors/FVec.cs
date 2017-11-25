@@ -38,6 +38,12 @@ namespace Aubio.NET.Vectors
         {
         }
 
+        [PublicAPI]
+        public unsafe FVec(int length, FVecWindowType windowType)
+            : this(new_aubio_window2(windowType, length.ToUInt32()), true)
+        {
+        }
+
         #endregion
 
         #region IVector<float> Members
@@ -245,6 +251,13 @@ namespace Aubio.NET.Vectors
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern unsafe FVec__* new_fvec(
+            uint length
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe FVec__* new_aubio_window2(
+            [MarshalAs(UnmanagedType.I4)] FVecWindowType windowType,
             uint length
         );
 
