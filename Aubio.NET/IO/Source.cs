@@ -85,6 +85,17 @@ namespace Aubio.NET.IO
         }
 
         [PublicAPI]
+        public void DoMulti([NotNull] FMat buffer, out int framesRead)
+        {
+            if (buffer == null)
+                throw new ArgumentNullException(nameof(buffer));
+
+            aubio_source_do_multi(this, buffer, out var read);
+
+            framesRead = read.ToInt32();
+        }
+
+        [PublicAPI]
         public void Seek(int position)
         {
             if (position < 0)
@@ -110,12 +121,12 @@ namespace Aubio.NET.IO
             out uint read
         );
 
-        //TODO
-        //void aubio_source_do_multi(aubio_source_t* s, fmat_t* read_to, uint_t* read)
-        //[DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        // static extern void aubio_source_do_multi(
-        //    [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Source instance,
-        //);
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void aubio_source_do_multi(
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Source instance,
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FMat readTo,
+            out uint read
+        );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern uint aubio_source_get_channels(
@@ -145,7 +156,7 @@ namespace Aubio.NET.IO
             [MarshalAs(UnmanagedType.LPStr)] string uri,
             uint sampleRate,
             uint hopSize
-            );
+        );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern void del_aubio_source(
