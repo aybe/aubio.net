@@ -7,10 +7,16 @@ namespace Aubio.NET
 {
     public abstract class AubioObject : IDisposable
     {
-        internal AubioObject()
+        internal AubioObject(bool isDisposable = true)
         {
             // make this public object not inheritable
+
+            // handle some special cases
+            IsDisposable = isDisposable;
         }
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private bool IsDisposable { get; }
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         internal bool IsDisposed { get; private set; }
@@ -25,6 +31,9 @@ namespace Aubio.NET
         [SuppressMessage("ReSharper", "VirtualMemberNeverOverridden.Global")]
         public virtual void Dispose(bool disposing)
         {
+            if (!IsDisposable)
+                return; // do not flag as disposed
+
             if (IsDisposed)
                 return;
 
