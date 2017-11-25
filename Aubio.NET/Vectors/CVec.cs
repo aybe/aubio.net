@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security;
 using JetBrains.Annotations;
@@ -11,6 +12,8 @@ namespace Aubio.NET.Vectors
     {
         #region Fields
 
+        [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly unsafe CVec__* _cVec;
 
         #endregion
