@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 
 namespace Aubio.NET.IO
 {
-    public sealed class Source : AubioObject
+    public sealed class Source : AubioObject, ISampler
     {
         #region Fields
 
