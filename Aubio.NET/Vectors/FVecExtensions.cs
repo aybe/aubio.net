@@ -155,7 +155,7 @@ namespace Aubio.NET.Vectors
             return fvec_clamp(fVec, absmax);
         }
 
-        public static void SetWindow([NotNull] this FVec fVec, FVecWindowType windowType)
+        public static void SetWindowType([NotNull] this FVec fVec, FVecWindowType windowType)
         {
             if (fVec == null)
                 throw new ArgumentNullException(nameof(fVec));
