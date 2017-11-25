@@ -37,6 +37,13 @@ namespace Aubio.NET.TestVectors
                 var array = vec.ToArray();
             }
 
+            using (var vec = new FVec(21, FVecWindowType.Gaussian))
+            {
+                vec.SetWindowType(FVecWindowType.Ones);
+                vec.SetWindowType(FVecWindowType.Rectangle);
+                vec.SetWindowType(FVecWindowType.BlackmanHarris);
+            }
+
             using (var vec = new LVec(10))
             {
                 vec[0] = 1;
