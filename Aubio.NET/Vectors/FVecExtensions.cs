@@ -8,6 +8,105 @@ namespace Aubio.NET.Vectors
     [PublicAPI]
     public static class FVecExtensions
     {
+        [PublicAPI]
+        public static void Exp([NotNull] this FVec fVec)
+        {
+            if (fVec == null)
+                throw new ArgumentNullException(nameof(fVec));
+
+            fvec_exp(fVec);
+        }
+
+        [PublicAPI]
+        public static void Cos([NotNull] this FVec fVec)
+        {
+            if (fVec == null)
+                throw new ArgumentNullException(nameof(fVec));
+
+            fvec_cos(fVec);
+        }
+
+        [PublicAPI]
+        public static void Sin([NotNull] this FVec fVec)
+        {
+            if (fVec == null)
+                throw new ArgumentNullException(nameof(fVec));
+
+            fvec_sin(fVec);
+        }
+
+        [PublicAPI]
+        public static void Abs([NotNull] this FVec fVec)
+        {
+            if (fVec == null)
+                throw new ArgumentNullException(nameof(fVec));
+
+            fvec_abs(fVec);
+        }
+
+        [PublicAPI]
+        public static void Sqrt([NotNull] this FVec fVec)
+        {
+            if (fVec == null)
+                throw new ArgumentNullException(nameof(fVec));
+
+            fvec_sqrt(fVec);
+        }
+
+        [PublicAPI]
+        public static void Log10([NotNull] this FVec fVec)
+        {
+            if (fVec == null)
+                throw new ArgumentNullException(nameof(fVec));
+
+            fvec_log10(fVec);
+        }
+
+        [PublicAPI]
+        public static void Log([NotNull] this FVec fVec)
+        {
+            if (fVec == null)
+                throw new ArgumentNullException(nameof(fVec));
+
+            fvec_log(fVec);
+        }
+
+        [PublicAPI]
+        public static void Floor([NotNull] this FVec fVec)
+        {
+            if (fVec == null)
+                throw new ArgumentNullException(nameof(fVec));
+
+            fvec_floor(fVec);
+        }
+
+        [PublicAPI]
+        public static void Ceil([NotNull] this FVec fVec)
+        {
+            if (fVec == null)
+                throw new ArgumentNullException(nameof(fVec));
+
+            fvec_ceil(fVec);
+        }
+
+        [PublicAPI]
+        public static void Round([NotNull] this FVec fVec)
+        {
+            if (fVec == null)
+                throw new ArgumentNullException(nameof(fVec));
+
+            fvec_round(fVec);
+        }
+
+        [PublicAPI]
+        public static void Pow([NotNull] this FVec fVec, float pow)
+        {
+            if (fVec == null)
+                throw new ArgumentNullException(nameof(fVec));
+
+            fvec_pow(fVec, pow);
+        }
+
         public static float ZeroCrossingRate([NotNull] this FVec fVec)
         {
             if (fVec == null)
@@ -55,6 +154,73 @@ namespace Aubio.NET.Vectors
 
             return fvec_clamp(fVec, absmax);
         }
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void fvec_exp(
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec instance
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void fvec_cos(
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec instance
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void fvec_sin(
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec instance
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void fvec_abs(
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec instance
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void fvec_sqrt(
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec instance
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void fvec_log10(
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec instance
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void fvec_log(
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec instance
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void fvec_floor(
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec instance
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void fvec_ceil(
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec instance
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void fvec_round(
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec instance
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void fvec_pow(
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec instance,
+            float pow
+        );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio")]
