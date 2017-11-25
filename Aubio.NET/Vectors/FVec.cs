@@ -33,8 +33,14 @@ namespace Aubio.NET.Vectors
         }
 
         [PublicAPI]
-        public unsafe FVec(int length, bool isDisposable = true)
+        internal unsafe FVec(int length, bool isDisposable)
             : this(new_fvec(length.ToUInt32()), isDisposable)
+        {
+        }
+
+        [PublicAPI]
+        public FVec(int length)
+            : this(length, true)
         {
         }
 
