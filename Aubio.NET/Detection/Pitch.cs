@@ -38,21 +38,12 @@ namespace Aubio.NET.Detection
         #region Public Members
 
         [PublicAPI]
-        public float Confidence
-        {
-            get
-            {
-                return aubio_pitch_get_confidence(this);
-            }
-        }
+        public float Confidence => aubio_pitch_get_confidence(this);
 
         [PublicAPI]
         public float Silence
         {
-            get
-            {
-                return aubio_pitch_get_silence(this);
-            }
+            get => aubio_pitch_get_silence(this);
             set
             {
                 if (aubio_pitch_set_silence(this, value))
@@ -63,10 +54,7 @@ namespace Aubio.NET.Detection
         [PublicAPI]
         public float Tolerance
         {
-            get
-            {
-                return aubio_pitch_get_tolerance(this);
-            }
+            get => aubio_pitch_get_tolerance(this);
             set
             {
                 if (aubio_pitch_set_tolerance(this, value))
@@ -77,14 +65,8 @@ namespace Aubio.NET.Detection
         [PublicAPI]
         public PitchUnit Unit
         {
-            get
-            {
-                return aubio_pitch_get_mode(this);
-            }
-            set
-            {
-                aubio_pitch_set_mode(this, value);
-            }
+            get => aubio_pitch_get_mode(this);
+            set => aubio_pitch_set_mode(this, value);
         }
 
         [PublicAPI]
@@ -120,7 +102,7 @@ namespace Aubio.NET.Detection
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern unsafe Pitch__* new_aubio_pitch2(
-           [MarshalAs(UnmanagedType.I4)] PitchMethod method,
+            [MarshalAs(UnmanagedType.I4)] PitchMethod method,
             uint bufferSize,
             uint hopSize,
             uint sampleRate
