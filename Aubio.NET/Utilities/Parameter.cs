@@ -17,17 +17,13 @@ namespace Aubio.NET.Utilities
 
         #region Constructors
 
-        private unsafe Parameter([NotNull] Parameter__* parameter)
+        public unsafe Parameter(float minValue, float maxValue, int steps)
         {
+            var parameter = new_aubio_parameter(minValue, maxValue, steps.ToUInt32());
             if (parameter == null)
                 throw new ArgumentNullException(nameof(parameter));
 
             _parameter = parameter;
-        }
-
-        public unsafe Parameter(float minValue, float maxValue, int steps)
-            : this(new_aubio_parameter(minValue, maxValue, steps.ToUInt32()))
-        {
         }
 
         #endregion

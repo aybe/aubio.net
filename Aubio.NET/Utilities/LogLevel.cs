@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace Aubio.NET
+namespace Aubio.NET.Utilities
 {
     [PublicAPI]
     public enum LogLevel

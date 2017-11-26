@@ -1,5 +1,6 @@
 ﻿using System;
 using Aubio.NET.Detection;
+using Aubio.NET.Utilities;
 using Aubio.NET.Vectors;
 
 namespace Aubio.NET.TestLog

@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 
-namespace Aubio.NET
+namespace Aubio.NET.Utilities
 {
     [PublicAPI]
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, ThrowOnUnmappableChar = true)]

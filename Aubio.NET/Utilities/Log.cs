@@ -2,10 +2,10 @@
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 
-namespace Aubio.NET
+namespace Aubio.NET.Utilities
 {
     /// <summary>
-    /// https://aubio.org/doc/latest/log_8h.html
+    ///     https://aubio.org/doc/latest/log_8h.html
     /// </summary>
     [PublicAPI]
     public static class Log
@@ -40,14 +40,14 @@ namespace Aubio.NET
             aubio_log_set_function(function, data);
         }
 
-        public static LogFunction SetLevelFunction(LogLevel level, [NotNull] LogFunction function,
-            IntPtr data)
+        public static LogFunction SetLevelFunction(LogLevel level, [NotNull] LogFunction function, IntPtr data)
         {
             if (function == null)
                 throw new ArgumentNullException(nameof(function));
 
-            var value = aubio_log_set_level_function(level, function, data);
-            return value;
+            var previous = aubio_log_set_level_function(level, function, data);
+
+            return previous;
         }
     }
 }
