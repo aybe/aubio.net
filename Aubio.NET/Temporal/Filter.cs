@@ -229,7 +229,6 @@ namespace Aubio.NET.Temporal
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.Bool)]
         private static extern unsafe Filter__* new_aubio_filter_biquad(
             double b0,
             double b1,
