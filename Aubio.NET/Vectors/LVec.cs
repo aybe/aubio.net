@@ -20,7 +20,8 @@ namespace Aubio.NET.Vectors
 
         #region Constructors
 
-        private unsafe LVec([NotNull] LVec__* lVec)
+        internal unsafe LVec([NotNull] LVec__* lVec, bool isDisposable = true)
+            :base(isDisposable)
         {
             if (lVec == null)
                 throw new ArgumentNullException(nameof(lVec));
