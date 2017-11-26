@@ -21,17 +21,19 @@ namespace Aubio.NET.Vectors
 
         #region Constructors
 
-        private unsafe FMat([NotNull] FMat__* fMat)
+        public unsafe FMat(int rows, int columns)
         {
+            if (rows <= 0)
+                throw new ArgumentOutOfRangeException(nameof(rows));
+
+            if (columns <= 0)
+                throw new ArgumentOutOfRangeException(nameof(columns));
+
+            var fMat = new_fmat(rows.ToUInt32(), columns.ToUInt32());
             if (fMat == null)
                 throw new ArgumentNullException(nameof(fMat));
 
             _fMat = fMat;
-        }
-
-        public unsafe FMat(int rows, int columns)
-            : this(new_fmat(rows.ToUInt32(), columns.ToUInt32()))
-        {
         }
 
         #endregion

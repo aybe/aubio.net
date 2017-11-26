@@ -31,8 +31,15 @@ namespace Aubio.NET.Vectors
 
         [PublicAPI]
         public unsafe LVec(int length)
-            : this(new_lvec(length.ToUInt32()))
         {
+            if (length <= 0)
+                throw new ArgumentOutOfRangeException(nameof(length));
+
+            var lVec = new_lvec(length.ToUInt32());
+            if (lVec == null)
+                throw new ArgumentNullException(nameof(lVec));
+
+            _lVec = new_lvec(length.ToUInt32());
         }
 
         #endregion

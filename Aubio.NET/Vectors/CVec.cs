@@ -20,20 +20,19 @@ namespace Aubio.NET.Vectors
 
         #region Constructors
 
-        private unsafe CVec([NotNull] CVec__* cVec)
+        [PublicAPI]
+        public unsafe CVec(int length)
         {
+            if (length <= 0)
+                throw new ArgumentOutOfRangeException(nameof(length));
+
+            var cVec = new_cvec(length.ToUInt32());
             if (cVec == null)
                 throw new ArgumentNullException(nameof(cVec));
 
             _cVec = cVec;
             Norm = new CVecBufferNorm(this, cVec->Norm, cVec->Length.ToInt32());
             Phas = new CVecBufferPhas(this, cVec->Phas, cVec->Length.ToInt32());
-        }
-
-        [PublicAPI]
-        public unsafe CVec(int length)
-            : this(new_cvec(length.ToUInt32()))
-        {
         }
 
         #endregion

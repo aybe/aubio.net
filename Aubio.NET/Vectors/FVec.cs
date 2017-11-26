@@ -30,7 +30,11 @@ namespace Aubio.NET.Vectors
             if (length <= 0)
                 throw new ArgumentOutOfRangeException(nameof(length));
 
-            _vec = new_fvec(length.ToUInt32());
+            var fVec = new_fvec(length.ToUInt32());
+            if (fVec == null)
+                throw new ArgumentNullException(nameof(fVec));
+
+            _vec = fVec;
         }
 
         [PublicAPI]
@@ -39,7 +43,11 @@ namespace Aubio.NET.Vectors
             if (length <= 0)
                 throw new ArgumentOutOfRangeException(nameof(length));
 
-            _vec = new_fvec(length.ToUInt32());
+            var fVec = new_fvec(length.ToUInt32());
+            if (fVec == null)
+                throw new ArgumentNullException(nameof(fVec));
+
+            _vec = fVec;
         }
 
         [PublicAPI]
@@ -48,7 +56,11 @@ namespace Aubio.NET.Vectors
             if (length <= 0)
                 throw new ArgumentOutOfRangeException(nameof(length));
 
-            _vec = new_aubio_window2(windowType, length.ToUInt32());
+            var fVec = new_aubio_window2(windowType, length.ToUInt32());
+            if (fVec == null)
+                throw new ArgumentNullException(nameof(fVec));
+
+            _vec = fVec;
         }
 
         #endregion

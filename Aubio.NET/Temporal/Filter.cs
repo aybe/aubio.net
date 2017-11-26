@@ -28,8 +28,15 @@ namespace Aubio.NET.Temporal
 
         [PublicAPI]
         public unsafe Filter(int order)
-            : this(new_aubio_filter(order.ToUInt32()))
         {
+            if (order <= 0)
+                throw new ArgumentOutOfRangeException(nameof(order));
+
+            var filter = new_aubio_filter(order.ToUInt32());
+            if (filter == null)
+                throw new ArgumentNullException(nameof(filter));
+
+            _filter = filter;
         }
 
         [PublicAPI]
