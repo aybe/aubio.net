@@ -51,12 +51,22 @@ namespace Aubio.NET.Vectors
         {
             get
             {
-                ThrowOnInvalidIndex(row, column);
+                if (row < 0 || row >= Rows)
+                    throw new ArgumentOutOfRangeException(nameof(row));
+
+                if (column < 0 || column >= Columns)
+                    throw new ArgumentOutOfRangeException(nameof(column));
+
                 return fmat_get_sample(this, row.ToUInt32(), column.ToUInt32());
             }
             set
             {
-                ThrowOnInvalidIndex(row, column);
+                if (row < 0 || row >= Rows)
+                    throw new ArgumentOutOfRangeException(nameof(row));
+
+                if (column < 0 || column >= Columns)
+                    throw new ArgumentOutOfRangeException(nameof(column));
+
                 fmat_set_sample(this, value, row.ToUInt32(), column.ToUInt32());
             }
         }
@@ -65,14 +75,14 @@ namespace Aubio.NET.Vectors
         {
             IEnumerable<IEnumerable<float>> Rows()
             {
-                IEnumerable<float> Row(int i)
+                IEnumerable<float> Row(int row)
                 {
                     for (var col = 0; col < Columns; col++)
-                        yield return this[i, col];
+                        yield return this[row, col];
                 }
 
-                for (var i = 0; i < this.Rows; i++)
-                    yield return Row(i);
+                for (var row = 0; row < this.Rows; row++)
+                    yield return Row(row);
             }
 
             var enumerable = Rows();
@@ -91,26 +101,22 @@ namespace Aubio.NET.Vectors
             if (target == null)
                 throw new ArgumentNullException(nameof(target));
 
+            if (target.Rows != Rows || target.Columns != Columns)
+                throw new ArgumentOutOfRangeException(nameof(target));
 
             fmat_copy(this, target);
         }
 
-        /// <summary>
-        ///     see Remarks.
-        /// </summary>
-        /// <returns></returns>
-        /// <remarks>
-        ///     Internally, aubio assign a reference to the returned copy, therefore,
-        ///     changes in <see cref="FVec" /> and <see cref="FMat" /> are reflected.
-        ///     Note that you can safely leverage the 'using' pattern on returned instance
-        ///     as Aubio.NET handles such special cases internally.
-        /// </remarks>
         [PublicAPI]
         public FVec GetChannel(int row)
         {
-            ThrowOnInvalidRow(row);
+            if (row < 0 || row >= Rows)
+                throw new ArgumentOutOfRangeException(nameof(row));
+
             var output = new FVec(Columns, false);
+
             fmat_get_channel(this, row.ToUInt32(), output);
+
             return output;
         }
 
@@ -181,24 +187,6 @@ namespace Aubio.NET.Vectors
         public void Zeros()
         {
             fmat_zeros(this);
-        }
-
-        private void ThrowOnInvalidIndex(int row, int column)
-        {
-            ThrowOnInvalidRow(row);
-            ThrowOnInvalidColumn(column);
-        }
-
-        private void ThrowOnInvalidRow(int row)
-        {
-            if (row < 0 || row >= Rows)
-                throw new ArgumentOutOfRangeException(nameof(row));
-        }
-
-        private void ThrowOnInvalidColumn(int column)
-        {
-            if (column < 0 || column >= Columns)
-                throw new ArgumentOutOfRangeException(nameof(column));
         }
 
         #endregion

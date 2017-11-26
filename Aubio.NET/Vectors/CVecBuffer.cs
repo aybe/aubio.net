@@ -12,6 +12,9 @@ namespace Aubio.NET.Vectors
             if (data == null)
                 throw new ArgumentNullException(nameof(data));
 
+            if (length <= 0)
+                throw new ArgumentOutOfRangeException(nameof(length));
+
             CVec = cVec ?? throw new ArgumentNullException(nameof(cVec));
         }
 
@@ -36,12 +39,6 @@ namespace Aubio.NET.Vectors
         public abstract void Ones();
 
         public abstract void Zeros();
-
-        protected void ThrowOnInvalidIndex(int index)
-        {
-            if (index < 0 || index >= Length)
-                throw new IndexOutOfRangeException();
-        }
 
         public abstract unsafe float* GetData();
     }

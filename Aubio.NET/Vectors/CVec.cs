@@ -31,6 +31,7 @@ namespace Aubio.NET.Vectors
                 throw new ArgumentNullException(nameof(cVec));
 
             _cVec = cVec;
+
             Norm = new CVecBufferNorm(this, cVec->Norm, cVec->Length.ToInt32());
             Phas = new CVecBufferPhas(this, cVec->Phas, cVec->Length.ToInt32());
         }
@@ -57,7 +58,9 @@ namespace Aubio.NET.Vectors
         {
             get
             {
-                ThrowOnInvalidIndex(index);
+                if (index < 0 || index >= Length)
+                    throw new IndexOutOfRangeException();
+
                 var norm = Norm[index];
                 var phas = Phas[index];
                 var complex = new CVecComplex(norm, phas);
@@ -65,7 +68,9 @@ namespace Aubio.NET.Vectors
             }
             set
             {
-                ThrowOnInvalidIndex(index);
+                if (index < 0 || index >= Length)
+                    throw new IndexOutOfRangeException();
+
                 Norm[index] = value.Norm;
                 Phas[index] = value.Phas;
             }
@@ -80,17 +85,14 @@ namespace Aubio.NET.Vectors
         [PublicAPI]
         public IVector<float> Phas { get; }
 
-        private void ThrowOnInvalidIndex(int index)
-        {
-            if (index < 0 || index >= Length)
-                throw new IndexOutOfRangeException();
-        }
-
         [PublicAPI]
         public void Copy([NotNull] CVec target)
         {
             if (target == null)
                 throw new ArgumentNullException(nameof(target));
+
+            if (target.Length != Length)
+                throw new ArgumentOutOfRangeException(nameof(target));
 
             cvec_copy(this, target);
         }
@@ -100,7 +102,6 @@ namespace Aubio.NET.Vectors
         {
             cvec_logmag(this, lambda);
         }
-
 
         [PublicAPI]
         public void Print()

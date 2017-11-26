@@ -71,12 +71,16 @@ namespace Aubio.NET.Vectors
         {
             get
             {
-                ThrowOnInvalidIndex(index);
+                if (index < 0 || index >= Length)
+                    throw new IndexOutOfRangeException();
+
                 return fvec_get_sample(this, index.ToUInt32());
             }
             set
             {
-                ThrowOnInvalidIndex(index);
+                if (index < 0 || index >= Length)
+                    throw new IndexOutOfRangeException();
+
                 fvec_set_sample(this, value, index.ToUInt32());
             }
         }
@@ -91,12 +95,6 @@ namespace Aubio.NET.Vectors
         public IEnumerator<float> GetEnumerator()
         {
             return new VectorEnumerator<float>(this);
-        }
-
-        private void ThrowOnInvalidIndex(int index)
-        {
-            if (index < 0 || index >= Length)
-                throw new IndexOutOfRangeException();
         }
 
         #endregion
@@ -122,6 +120,9 @@ namespace Aubio.NET.Vectors
         {
             if (target == null)
                 throw new ArgumentNullException(nameof(target));
+
+            if (target.Length != Length)
+                throw new ArgumentOutOfRangeException(nameof(target));
 
             fvec_copy(this, target);
         }
@@ -190,52 +191,52 @@ namespace Aubio.NET.Vectors
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern void fvec_copy(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec instance,
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec fVec,
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec target
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern unsafe float* fvec_get_data(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec instance
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec fVec
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern float fvec_get_sample(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec instance,
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec fVec,
             uint position
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern void fvec_ones(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec instance
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec fVec
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern void fvec_print(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec instance
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec fVec
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern void fvec_rev(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec instance
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec fVec
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern void fvec_set_all(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec instance,
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec fVec,
             float value
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern void fvec_set_sample(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec instance,
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec fVec,
             float value,
             uint position
         );
@@ -243,14 +244,14 @@ namespace Aubio.NET.Vectors
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern void fvec_weight(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec instance,
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec fVec,
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec weight
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern void fvec_weighted_copy(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec instance,
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec fVec,
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec weight,
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec output
         );
@@ -258,13 +259,13 @@ namespace Aubio.NET.Vectors
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern void fvec_zeros(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec instance
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec fVec
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern void del_fvec(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec instance
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec fVec
         );
 
         [SuppressUnmanagedCodeSecurity]

@@ -21,7 +21,7 @@ namespace Aubio.NET.Vectors
         #region Constructors
 
         internal unsafe LVec([NotNull] LVec__* lVec, bool isDisposable = true)
-            :base(isDisposable)
+            : base(isDisposable)
         {
             if (lVec == null)
                 throw new ArgumentNullException(nameof(lVec));
@@ -48,8 +48,20 @@ namespace Aubio.NET.Vectors
 
         public double this[int index]
         {
-            get => lvec_get_sample(this, index.ToUInt32());
-            set => lvec_set_sample(this, value, index.ToUInt32());
+            get
+            {
+                if (index < 0 || index >= Length)
+                    throw new IndexOutOfRangeException();
+
+                return lvec_get_sample(this, index.ToUInt32());
+            }
+            set
+            {
+                if (index < 0 || index >= Length)
+                    throw new IndexOutOfRangeException();
+
+                lvec_set_sample(this, value, index.ToUInt32());
+            }
         }
 
         public unsafe int Length => _lVec->Length.ToInt32();

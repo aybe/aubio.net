@@ -16,12 +16,16 @@ namespace Aubio.NET.Vectors
         {
             get
             {
-                ThrowOnInvalidIndex(index);
+                if (index < 0 || index >= Length)
+                    throw new IndexOutOfRangeException();
+
                 return cvec_phas_get_sample(CVec, index.ToUInt32());
             }
             set
             {
-                ThrowOnInvalidIndex(index);
+                if (index < 0 || index >= Length)
+                    throw new IndexOutOfRangeException();
+
                 cvec_phas_set_sample(CVec, value, index.ToUInt32());
             }
         }
