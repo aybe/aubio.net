@@ -21,18 +21,26 @@ namespace Aubio.NET.Detection
 
         #region Constructors
 
-        private unsafe Tempo([NotNull] Tempo__* tempo)
+        [PublicAPI]
+        public unsafe Tempo(string method = "default", int bufferSize = 1024, int hopSize = 256, int sampleRate = 44100)
         {
+            if (bufferSize <=1)
+                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+
+            if (hopSize <=0)
+                throw new ArgumentOutOfRangeException(nameof(hopSize));
+
+            if (bufferSize < hopSize)
+                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+
+            if (sampleRate <= 0)
+                throw new ArgumentOutOfRangeException(nameof(sampleRate));
+
+            var tempo = new_aubio_tempo(method, bufferSize.ToUInt32(), hopSize.ToUInt32(), sampleRate.ToUInt32());
             if (tempo == null)
                 throw new ArgumentNullException(nameof(tempo));
 
             _tempo = tempo;
-        }
-
-        [PublicAPI]
-        public unsafe Tempo(string method = "default", int bufferSize = 1024, int hopSize = 256, int sampleRate = 44100)
-            : this(new_aubio_tempo(method, bufferSize.ToUInt32(), hopSize.ToUInt32(), sampleRate.ToUInt32()))
-        {
         }
 
         #endregion

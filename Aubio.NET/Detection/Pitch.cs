@@ -19,18 +19,26 @@ namespace Aubio.NET.Detection
 
         #region Constructors
 
-        private unsafe Pitch([NotNull] Pitch__* pitch)
+        [PublicAPI]
+        public unsafe Pitch(PitchMethod method, int bufferSize = 1024, int hopSize = 256, int sampleRate = 44100)
         {
+            if (bufferSize <= 1)
+                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+
+            if (hopSize <= 0)
+                throw new ArgumentOutOfRangeException(nameof(hopSize));
+
+            if (bufferSize < hopSize)
+                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+
+            if (sampleRate <= 0)
+                throw new ArgumentOutOfRangeException(nameof(sampleRate));
+
+            var pitch = new_aubio_pitch2(method, bufferSize.ToUInt32(), hopSize.ToUInt32(), sampleRate.ToUInt32());
             if (pitch == null)
                 throw new ArgumentNullException(nameof(pitch));
 
             _pitch = pitch;
-        }
-
-        [PublicAPI]
-        public unsafe Pitch(PitchMethod method, int bufferSize, int hopSize, int sampleRate)
-            : this(new_aubio_pitch2(method, bufferSize.ToUInt32(), hopSize.ToUInt32(), sampleRate.ToUInt32()))
-        {
         }
 
         #endregion

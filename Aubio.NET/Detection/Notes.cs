@@ -22,18 +22,23 @@ namespace Aubio.NET.Detection
 
         #region Constructors
 
-        private unsafe Notes([NotNull] Notes__* notes)
+        [PublicAPI]
+        public unsafe Notes(int bufferSize = 1024, int hopSize = 256, int sampleRate = 44100)
         {
+            if (bufferSize <= 0)
+                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+
+            if (hopSize <= 0)
+                throw new ArgumentOutOfRangeException(nameof(hopSize));
+
+            if (sampleRate <= 0)
+                throw new ArgumentOutOfRangeException(nameof(sampleRate));
+
+            var notes = new_aubio_notes("default", bufferSize.ToUInt32(), hopSize.ToUInt32(), sampleRate.ToUInt32());
             if (notes == null)
                 throw new ArgumentNullException(nameof(notes));
 
             _notes = notes;
-        }
-
-        [PublicAPI]
-        public unsafe Notes(int bufferSize = 1024, int hopSize = 256, int sampleRate = 44100)
-            : this(new_aubio_notes("default", bufferSize.ToUInt32(), hopSize.ToUInt32(), sampleRate.ToUInt32()))
-        {
         }
 
         #endregion
