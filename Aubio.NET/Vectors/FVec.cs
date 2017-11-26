@@ -23,31 +23,32 @@ namespace Aubio.NET.Vectors
 
         #region Constructors
 
-        private unsafe FVec([NotNull] FVec__* vec, bool isDisposable)
-            : base(isDisposable)
-        {
-            if (vec == null)
-                throw new ArgumentNullException(nameof(vec));
-
-            _vec = vec;
-        }
-
         [PublicAPI]
         internal unsafe FVec(int length, bool isDisposable)
-            : this(new_fvec(length.ToUInt32()), isDisposable)
+            : base(isDisposable)
         {
+            if (length <= 0)
+                throw new ArgumentOutOfRangeException(nameof(length));
+
+            _vec = new_fvec(length.ToUInt32());
         }
 
         [PublicAPI]
-        public FVec(int length)
-            : this(length, true)
+        public unsafe FVec(int length)
         {
+            if (length <= 0)
+                throw new ArgumentOutOfRangeException(nameof(length));
+
+            _vec = new_fvec(length.ToUInt32());
         }
 
         [PublicAPI]
         public unsafe FVec(int length, FVecWindowType windowType)
-            : this(new_aubio_window2(windowType, length.ToUInt32()), true)
         {
+            if (length <= 0)
+                throw new ArgumentOutOfRangeException(nameof(length));
+
+            _vec = new_aubio_window2(windowType, length.ToUInt32());
         }
 
         #endregion
