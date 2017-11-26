@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aubio.NET.TestIO", "Aubio.N
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aubio.NET.TestLog", "Aubio.NET.TestLog\Aubio.NET.TestLog.csproj", "{48CD859B-D9FE-4466-BD39-2B10C479977B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aubio.NET.TestParameter", "Aubio.NET.TestParameter\Aubio.NET.TestParameter.csproj", "{397ACA0F-9945-44FC-A275-553B82C00A9F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{48CD859B-D9FE-4466-BD39-2B10C479977B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48CD859B-D9FE-4466-BD39-2B10C479977B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48CD859B-D9FE-4466-BD39-2B10C479977B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{397ACA0F-9945-44FC-A275-553B82C00A9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{397ACA0F-9945-44FC-A275-553B82C00A9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{397ACA0F-9945-44FC-A275-553B82C00A9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{397ACA0F-9945-44FC-A275-553B82C00A9F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
