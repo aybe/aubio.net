@@ -55,7 +55,8 @@ namespace Aubio.NET.Detection
             }
             set
             {
-                ThrowIfNot(aubio_pitch_set_silence(this, value));
+                if (aubio_pitch_set_silence(this, value))
+                    throw new ArgumentOutOfRangeException(nameof(value));
             }
         }
 
@@ -68,7 +69,8 @@ namespace Aubio.NET.Detection
             }
             set
             {
-                ThrowIfNot(aubio_pitch_set_tolerance(this, value));
+                if (aubio_pitch_set_tolerance(this, value))
+                    throw new ArgumentOutOfRangeException(nameof(value));
             }
         }
 
