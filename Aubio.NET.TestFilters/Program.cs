@@ -11,7 +11,7 @@ namespace Aubio.NET.TestFilters
             using (var filter1 = Filter.NewAWeighting(44100))
             using (var filter2 = Filter.NewCWeighting(44100))
             using (var filter3 = Filter.NewBiquad(.1, .2, .3, .4, .5))
-            using (var filter4 = new Filter(5))
+            using (var filter4 = Filter.New(5))
             using (var input = new FVec(42, FVecWindowType.Ones))
             using (var output = new FVec(42))
             {

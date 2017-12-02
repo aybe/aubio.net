@@ -24,7 +24,7 @@ namespace Aubio.NET.TestTempo
             using (var source = new Source(uri, 0, hopSize))
             using (var input = new FVec(hopSize))
             using (var output = new FVec(1))
-            using (var tempo = new Tempo("default", winSize, hopSize, source.SampleRate))
+            using (var tempo = new Tempo(winSize, hopSize, source.SampleRate))
             {
                 var frames = 0;
                 int read;
@@ -36,7 +36,7 @@ namespace Aubio.NET.TestTempo
                     if (tempo.HasBeat(output))
                     {
                         var seconds = source.SamplesToSeconds(frames);
-                        var beat = tempo.LastBeat;
+                        var beat = tempo.Last;
                         var bpm = tempo.Bpm;
                         var confidence = tempo.Confidence;
                         var period = tempo.Period.Seconds;

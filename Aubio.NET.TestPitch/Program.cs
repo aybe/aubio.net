@@ -24,7 +24,7 @@ namespace Aubio.NET.TestPitch
             using (var source = new Source(uri, 0, hopSize))
             using (var input = new FVec(hopSize))
             using (var output = new FVec(1))
-            using (var pitch = new Pitch(PitchMethod.Yin, winSize, hopSize, source.SampleRate))
+            using (var pitch = new Pitch(PitchDetection.Yin, winSize, hopSize, source.SampleRate))
             {
                 pitch.Silence += 0.1f;
                 pitch.Tolerance += 0.1f;

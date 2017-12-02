@@ -23,8 +23,6 @@ namespace Aubio.NET.TestNotes
             using (var output = new FVec(hopSize))
             using (var notes = new Notes(winSize, hopSize, source.SampleRate))
             {
-                notes.CentPrecision = 100.0f;
-
                 int read;
                 var blocks = 0;
                 do

@@ -52,7 +52,7 @@ namespace Aubio.NET.TestLog
                 vec1.Print();
             }
 
-            using (var pitch = new Pitch(PitchMethod.Default, 1024, 256, 44100))
+            using (var pitch = new Pitch(PitchDetection.Default))
             {
                 try
                 {
