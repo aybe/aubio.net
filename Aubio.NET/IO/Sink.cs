@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security;
 using Aubio.NET.Vectors;
@@ -12,30 +11,27 @@ namespace Aubio.NET.IO
         #region Fields
 
         [NotNull]
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly unsafe Sink__* _sink;
 
         #endregion
 
-        #region Constructors
+        #region Public Members
 
-        private unsafe Sink([NotNull] Sink__* sink)
+        [PublicAPI]
+        public unsafe Sink([NotNull] string uri, int sampleRate = 0)
         {
+            if (uri == null)
+                throw new ArgumentNullException(nameof(uri));
+
+            if (sampleRate < 0)
+                throw new ArgumentOutOfRangeException(nameof(sampleRate));
+
+            var sink = new_aubio_sink(uri, sampleRate.ToUInt32());
             if (sink == null)
                 throw new ArgumentNullException(nameof(sink));
 
             _sink = sink;
         }
-
-        [PublicAPI]
-        public unsafe Sink(string uri, int sampleRate = 0)
-            : this(new_aubio_sink(uri, sampleRate.ToUInt32()))
-        {
-        }
-
-        #endregion
-
-        #region Public Members
 
         [PublicAPI]
         public int Channels => aubio_sink_get_channels(this).ToInt32();
@@ -93,7 +89,6 @@ namespace Aubio.NET.IO
 
         #endregion
 
-
         #region AubioObject Members
 
         protected override void DisposeNative()
@@ -142,7 +137,7 @@ namespace Aubio.NET.IO
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern void aubio_sink_do_multi(
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Sink sink,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FMat fMat,
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FMat buffer,
             uint write
         );
 
