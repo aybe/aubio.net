@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
 
@@ -26,6 +27,19 @@ namespace System
                 throw new ArgumentNullException(nameof(memberInfo));
 
             var attribute = memberInfo.GetCustomAttribute<T>();
+
+            return attribute;
+        }
+
+        [NotNull]
+        public static DescriptionAttribute GetDescriptionAttribute([NotNull] this Enum value)
+        {
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
+
+            var attribute = value.GetAttribute<DescriptionAttribute>();
+            if (attribute == null)
+                throw new ArgumentNullException(nameof(attribute));
 
             return attribute;
         }
