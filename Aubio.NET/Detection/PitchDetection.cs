@@ -6,6 +6,9 @@ namespace Aubio.NET.Detection
     [PublicAPI]
     public enum PitchDetection
     {
+        [Description("default")]
+        Default,
+
         [Description("mcomb")]
         MultipleCombFilter,
 
@@ -25,9 +28,6 @@ namespace Aubio.NET.Detection
         YinFast,
 
         [Description("specacf")]
-        SpectralAutoCorrelation,
-
-        [Description("default")]
-        Default
+        SpectralAutoCorrelation
     }
 }

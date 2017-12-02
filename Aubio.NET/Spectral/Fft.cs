@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security;
 using Aubio.NET.Vectors;
@@ -14,6 +15,7 @@ namespace Aubio.NET.Spectral
         #region Fields
 
         [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly unsafe Fft__* _fft;
 
         #endregion

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Aubio.NET.Vectors;
 using JetBrains.Annotations;
@@ -8,14 +9,22 @@ namespace Aubio.NET.Detection
     /// <summary>
     ///     https://aubio.org/doc/latest/tempo_8h.html
     /// </summary>
-    public sealed class Tempo : AubioObject
+    public sealed class Tempo : AubioObject, ISampler
     {
         #region Fields
 
         [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly unsafe Tempo__* _tempo;
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private int _tatumSignature = 4;
+
+        #endregion
+
+        #region Implementation of ISampler
+
+        public int SampleRate => aubio_tempo_get_samplerate(this).ToInt32();
 
         #endregion
 
@@ -97,9 +106,6 @@ namespace Aubio.NET.Detection
                 return time;
             }
         }
-
-        [PublicAPI]
-        public int SampleRate => aubio_tempo_get_samplerate(this).ToInt32();
 
         [PublicAPI]
         public float Silence

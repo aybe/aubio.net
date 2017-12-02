@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security;
 using Aubio.NET.Vectors;
@@ -9,20 +10,35 @@ namespace Aubio.NET.Synthesis
     /// <summary>
     ///     https://aubio.org/doc/latest/wavetable_8h.html
     /// </summary>
-    public sealed class Wavetable : AubioObject
+    public sealed class Wavetable : AubioObject, ISampler
     {
         #region Fields
 
         [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly unsafe Wavetable__* _wavetable;
+
+        #endregion
+
+        #region Implementation of ISampler
+
+        public int SampleRate { get; }
 
         #endregion
 
         #region Public Members
 
         [PublicAPI]
-        public unsafe Wavetable(int sampleRate, int blockSize)
+        public unsafe Wavetable(int sampleRate = 44100, int blockSize = 1024)
         {
+            if (sampleRate <= 0)
+                throw new ArgumentOutOfRangeException(nameof(sampleRate));
+
+            SampleRate = sampleRate;
+
+            if (blockSize <= 0)
+                throw new ArgumentOutOfRangeException(nameof(blockSize));
+
             var wavetable = new_aubio_wavetable(sampleRate.ToUInt32(), blockSize.ToUInt32());
             if (wavetable == null)
                 throw new ArgumentNullException(nameof(wavetable));
@@ -102,7 +118,7 @@ namespace Aubio.NET.Synthesis
 
         #endregion
 
-        #region AubioObject Members
+        #region Overrides of AubioObject
 
         protected override void DisposeNative()
         {
@@ -127,11 +143,34 @@ namespace Aubio.NET.Synthesis
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void del_aubio_wavetable(
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
+            Wavetable wavetable
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool aubio_wavetable_load(
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
             Wavetable wavetable,
             [MarshalAs(UnmanagedType.LPStr)] string uri
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool aubio_wavetable_play(
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
+            Wavetable wavetable
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool aubio_wavetable_stop(
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
+            Wavetable wavetable
         );
 
         [SuppressUnmanagedCodeSecurity]
@@ -154,14 +193,22 @@ namespace Aubio.NET.Synthesis
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void del_aubio_wavetable(
+        private static extern float aubio_wavetable_get_amp(
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
             Wavetable wavetable
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern float aubio_wavetable_get_amp(
+        private static extern float aubio_wavetable_get_freq(
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
+            Wavetable wavetable
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool aubio_wavetable_get_playing(
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
             Wavetable wavetable
         );
@@ -178,45 +225,11 @@ namespace Aubio.NET.Synthesis
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern float aubio_wavetable_get_freq(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            Wavetable wavetable
-        );
-
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool aubio_wavetable_set_freq(
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
             Wavetable wavetable,
             float frequency
-        );
-
-
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_wavetable_get_playing(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            Wavetable wavetable
-        );
-
-
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_wavetable_play(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            Wavetable wavetable
-        );
-
-
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_wavetable_stop(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            Wavetable wavetable
         );
 
         #endregion

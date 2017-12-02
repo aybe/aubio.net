@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security;
 using Aubio.NET.Vectors;
@@ -14,6 +15,7 @@ namespace Aubio.NET.Spectral
         #region Fields
 
         [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly unsafe PhaseVocoder__* _vocoder;
 
         #endregion
@@ -37,10 +39,10 @@ namespace Aubio.NET.Spectral
         }
 
         [PublicAPI]
-        public int WindowSize => aubio_pvoc_get_win(this).ToInt32();
+        public int HopSize => aubio_pvoc_get_hop(this).ToInt32();
 
         [PublicAPI]
-        public int HopSize => aubio_pvoc_get_hop(this).ToInt32();
+        public int WindowSize => aubio_pvoc_get_win(this).ToInt32();
 
         [PublicAPI]
         public void AddSynth([NotNull] FVec synth)
@@ -82,7 +84,7 @@ namespace Aubio.NET.Spectral
             var window = attribute.Description;
 
             if (aubio_pvoc_set_window(this, window))
-                throw new InvalidOperationException();
+                throw new ArgumentOutOfRangeException(nameof(windowType));
         }
 
         [PublicAPI]

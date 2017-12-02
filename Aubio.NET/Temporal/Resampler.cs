@@ -12,6 +12,8 @@ namespace Aubio.NET.Temporal
     /// </summary>
     public sealed class Resampler : AubioObject
     {
+        // TODO ratio could be computed from two rates and then implement ISampler
+
         #region Fields
 
         [NotNull]
@@ -20,7 +22,7 @@ namespace Aubio.NET.Temporal
 
         #endregion
 
-        #region Constructors
+        #region Public Members
 
         public unsafe Resampler(float ratio, ResamplerType type)
         {
@@ -35,10 +37,6 @@ namespace Aubio.NET.Temporal
 
             _resampler = resampler;
         }
-
-        #endregion
-
-        #region Public Members
 
         [PublicAPI]
         public float Ratio { get; }
@@ -60,7 +58,7 @@ namespace Aubio.NET.Temporal
 
         #endregion
 
-        #region AubioObject Members
+        #region Overrides of AubioObject
 
         protected override void DisposeNative()
         {
@@ -80,7 +78,7 @@ namespace Aubio.NET.Temporal
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern unsafe Resampler__* new_aubio_resampler(
             float ratio,
-            [MarshalAs(UnmanagedType.U4)] ResamplerType type
+            ResamplerType type
         );
 
         [SuppressUnmanagedCodeSecurity]

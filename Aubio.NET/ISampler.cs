@@ -1,4 +1,4 @@
-﻿namespace Aubio.NET.IO
+﻿namespace Aubio.NET
 {
     public interface ISampler
     {

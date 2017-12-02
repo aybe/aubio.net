@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security;
 using Aubio.NET.Vectors;
@@ -9,12 +10,19 @@ namespace Aubio.NET.Spectral
     /// <summary>
     ///     https://aubio.org/doc/latest/mfcc_8h.html
     /// </summary>
-    public sealed class Mfcc : AubioObject
+    public sealed class Mfcc : AubioObject, ISampler
     {
         #region Fields
 
         [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly unsafe Mfcc__* _mfcc;
+
+        #endregion
+
+        #region Implementation of ISampler
+
+        public int SampleRate { get; }
 
         #endregion
 
@@ -34,6 +42,8 @@ namespace Aubio.NET.Spectral
 
             if (sampleRate <= 0)
                 throw new ArgumentOutOfRangeException(nameof(sampleRate));
+
+            SampleRate = sampleRate;
 
             var mfcc = new_aubio_mfcc(
                 bufferSize.ToUInt32(), filters.ToUInt32(), coefficients.ToUInt32(), sampleRate.ToUInt32());

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security;
 using Aubio.NET.Vectors;
@@ -9,23 +10,41 @@ namespace Aubio.NET.Detection
     /// <summary>
     ///     https://aubio.org/doc/latest/onset_8h.html
     /// </summary>
-    public sealed class Onset : AubioObject
+    public sealed class Onset : AubioObject, ISampler
     {
         #region Fields
 
         [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly unsafe Onset__* _onset;
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private readonly int _sampleRate;
 
         #endregion
 
-        [PublicAPI]
-        public int SampleRate { get; }
+        #region Implementation of ISampler
+
+        public int SampleRate => _sampleRate;
+
+        #endregion
 
         #region Public Members
 
         [PublicAPI]
         public unsafe Onset(OnsetDetection detection, int bufferSize = 1024, int hopSize = 256, int sampleRate = 44100)
         {
+            if (bufferSize <= 0)
+                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+
+            if (hopSize <= 0)
+                throw new ArgumentOutOfRangeException(nameof(hopSize));
+
+            if (sampleRate <= 0)
+                throw new ArgumentOutOfRangeException(nameof(sampleRate));
+
+            _sampleRate = sampleRate;
+
             var attribute = detection.GetDescriptionAttribute();
             var method = attribute.Description;
 
@@ -34,8 +53,6 @@ namespace Aubio.NET.Detection
                 throw new ArgumentNullException(nameof(onset));
 
             _onset = onset;
-
-            SampleRate = sampleRate;
         }
 
         [PublicAPI]
@@ -66,7 +83,7 @@ namespace Aubio.NET.Detection
             get
             {
                 var samples = aubio_onset_get_delay(this);
-                var time = Time.FromSamples(SampleRate, samples.ToInt32());
+                var time = Time.FromSamples(_sampleRate, samples.ToInt32());
                 return time;
             }
             set
@@ -87,7 +104,7 @@ namespace Aubio.NET.Detection
             get
             {
                 var samples = aubio_onset_get_last(this);
-                var time = Time.FromSamples(SampleRate, samples.ToInt32());
+                var time = Time.FromSamples(_sampleRate, samples.ToInt32());
                 return time;
             }
         }
@@ -98,7 +115,7 @@ namespace Aubio.NET.Detection
             get
             {
                 var samples = aubio_onset_get_minioi(this);
-                var time = Time.FromSamples(SampleRate, samples.ToInt32());
+                var time = Time.FromSamples(_sampleRate, samples.ToInt32());
                 return time;
             }
             set

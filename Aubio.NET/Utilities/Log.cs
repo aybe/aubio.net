@@ -10,22 +10,7 @@ namespace Aubio.NET.Utilities
     [PublicAPI]
     public static class Log
     {
-        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_log_reset(
-        );
-
-        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_log_set_function(
-            [MarshalAs(UnmanagedType.FunctionPtr)] LogFunction function,
-            IntPtr data
-        );
-
-        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern LogFunction aubio_log_set_level_function(
-            LogLevel level,
-            LogFunction function,
-            IntPtr handle
-        );
+        #region Public Members
 
         public static void Reset()
         {
@@ -49,5 +34,28 @@ namespace Aubio.NET.Utilities
 
             return previous;
         }
+
+        #endregion
+
+        #region Native Methods
+
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void aubio_log_reset(
+        );
+
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void aubio_log_set_function(
+            [MarshalAs(UnmanagedType.FunctionPtr)] LogFunction function,
+            IntPtr data
+        );
+
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern LogFunction aubio_log_set_level_function(
+            LogLevel level,
+            LogFunction function,
+            IntPtr handle
+        );
+
+        #endregion
     }
 }

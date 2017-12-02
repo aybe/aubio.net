@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security;
 using Aubio.NET.Vectors;
@@ -14,10 +15,16 @@ namespace Aubio.NET.Spectral
         #region Fields
 
         [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly unsafe TransientSteadyStateSeparation__* _tss;
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private float _alpha = 3.0f;
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private float _beta = 4.0f;
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private float _threshold = 0.25f;
 
         #endregion

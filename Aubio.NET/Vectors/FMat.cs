@@ -8,7 +8,9 @@ using JetBrains.Annotations;
 
 namespace Aubio.NET.Vectors
 {
-    [PublicAPI]
+    /// <summary>
+    ///     https://aubio.org/doc/latest/fvec_8h.html
+    /// </summary>
     public sealed class FMat : AubioObject, IEnumerable<IEnumerable<float>>
     {
         #region Fields
@@ -17,7 +19,11 @@ namespace Aubio.NET.Vectors
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly unsafe FMat__* _fMat;
 
-        internal unsafe FMat([NotNull] FMat__* fMat, bool isDisposable) 
+        #endregion
+
+        #region Public Members
+
+        internal unsafe FMat([NotNull] FMat__* fMat, bool isDisposable)
             : base(isDisposable)
         {
             if (fMat == null)
@@ -25,10 +31,6 @@ namespace Aubio.NET.Vectors
 
             _fMat = fMat;
         }
-
-        #endregion
-
-        #region Constructors
 
         public unsafe FMat(int rows, int columns)
         {
@@ -44,10 +46,6 @@ namespace Aubio.NET.Vectors
 
             _fMat = fMat;
         }
-
-        #endregion
-
-        #region Public Members
 
         [PublicAPI]
         public unsafe int Rows => _fMat->Height.ToInt32();
@@ -122,6 +120,8 @@ namespace Aubio.NET.Vectors
             if (row < 0 || row >= Rows)
                 throw new ArgumentOutOfRangeException(nameof(row));
 
+            // return a non-disposable copy since they just assign pointers in this call
+
             var output = new FVec(Columns, false);
 
             fmat_get_channel(this, row.ToUInt32(), output);
@@ -132,6 +132,9 @@ namespace Aubio.NET.Vectors
         [PublicAPI]
         public unsafe float* GetChannelData(int channel)
         {
+            if (channel < 0 || channel >= Rows)
+                throw new ArgumentOutOfRangeException(nameof(channel));
+
             return fmat_get_channel_data(this, channel.ToUInt32());
         }
 
@@ -200,7 +203,7 @@ namespace Aubio.NET.Vectors
 
         #endregion
 
-        #region AubioObject Members
+        #region Overrides of AubioObject
 
         protected override void DisposeNative()
         {

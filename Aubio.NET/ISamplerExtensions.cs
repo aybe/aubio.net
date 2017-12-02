@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace Aubio.NET.IO
+namespace Aubio.NET
 {
     [PublicAPI]
     // ReSharper disable once InconsistentNaming

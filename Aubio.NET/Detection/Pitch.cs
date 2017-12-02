@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security;
 using Aubio.NET.Vectors;
@@ -6,14 +7,24 @@ using JetBrains.Annotations;
 
 namespace Aubio.NET.Detection
 {
-    public sealed class Pitch : AubioObject
+    public sealed class Pitch : AubioObject, ISampler
     {
+        private readonly int _sampleRate;
+
         #region Fields
 
+        [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private readonly unsafe Pitch__* _pitch;
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private PitchUnit _unit = PitchUnit.Default;
 
-        [NotNull]
-        private readonly unsafe Pitch__* _pitch;
+        #endregion
+
+        #region Implementation of ISampler
+
+        public int SampleRate => _sampleRate;
 
         #endregion
 
@@ -33,6 +44,8 @@ namespace Aubio.NET.Detection
 
             if (sampleRate <= 0)
                 throw new ArgumentOutOfRangeException(nameof(sampleRate));
+
+            _sampleRate = sampleRate;
 
             var attribute = detection.GetDescriptionAttribute();
             var method = attribute.Description;

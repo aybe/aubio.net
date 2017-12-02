@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security;
 using Aubio.NET.Vectors;
@@ -9,20 +10,35 @@ namespace Aubio.NET.Synthesis
     /// <summary>
     ///     https://aubio.org/doc/latest/sampler_8h.html
     /// </summary>
-    public sealed class Sampler : AubioObject
+    public sealed class Sampler : AubioObject, ISampler
     {
         #region Fields
 
         [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly unsafe Sampler__* _sampler;
+
+        #endregion
+
+        #region Implementation of ISampler
+
+        public int SampleRate { get; }
 
         #endregion
 
         #region Public Members
 
         [PublicAPI]
-        public unsafe Sampler(int sampleRate, int hopSize)
+        public unsafe Sampler(int sampleRate = 44100, int hopSize = 256)
         {
+            if (sampleRate <= 0)
+                throw new ArgumentOutOfRangeException(nameof(sampleRate));
+         
+            SampleRate = sampleRate;
+
+            if (hopSize <= 0)
+                throw new ArgumentOutOfRangeException(nameof(hopSize));
+
             var sampler = new_aubio_sampler(sampleRate.ToUInt32(), hopSize.ToUInt32());
             if (sampler == null)
                 throw new ArgumentNullException(nameof(sampler));
@@ -80,7 +96,7 @@ namespace Aubio.NET.Synthesis
 
         #endregion
 
-        #region AubioObject Members
+        #region Overrides of AubioObject
 
         protected override void DisposeNative()
         {
@@ -101,6 +117,12 @@ namespace Aubio.NET.Synthesis
         private static extern unsafe Sampler__* new_aubio_sampler(
             uint sampleRate,
             uint hopSize
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void del_aubio_sampler(
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Sampler sampler
         );
 
         [SuppressUnmanagedCodeSecurity]
@@ -145,12 +167,6 @@ namespace Aubio.NET.Synthesis
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool aubio_sampler_stop(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Sampler sampler
-        );
-
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void del_aubio_sampler(
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Sampler sampler
         );
 

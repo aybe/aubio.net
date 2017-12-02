@@ -8,6 +8,9 @@ using JetBrains.Annotations;
 
 namespace Aubio.NET.Vectors
 {
+    /// <summary>
+    ///     https://aubio.org/doc/latest/lvec_8h.html
+    /// </summary>
     public sealed class LVec : AubioObject, IVector<double>
     {
         #region Fields
@@ -18,33 +21,7 @@ namespace Aubio.NET.Vectors
 
         #endregion
 
-        #region Constructors
-
-        internal unsafe LVec([NotNull] LVec__* lVec, bool isDisposable = true)
-            : base(isDisposable)
-        {
-            if (lVec == null)
-                throw new ArgumentNullException(nameof(lVec));
-
-            _lVec = lVec;
-        }
-
-        [PublicAPI]
-        public unsafe LVec(int length)
-        {
-            if (length <= 0)
-                throw new ArgumentOutOfRangeException(nameof(length));
-
-            var lVec = new_lvec(length.ToUInt32());
-            if (lVec == null)
-                throw new ArgumentNullException(nameof(lVec));
-
-            _lVec = new_lvec(length.ToUInt32());
-        }
-
-        #endregion
-
-        #region IVector<double> Members
+        #region Implementation of IVector<double>
 
         public double this[int index]
         {
@@ -76,12 +53,6 @@ namespace Aubio.NET.Vectors
             return GetEnumerator();
         }
 
-        [PublicAPI]
-        public unsafe double* GetData()
-        {
-            return lvec_get_data(this);
-        }
-
         public void SetAll(double value)
         {
             lvec_set_all(this, (float) value);
@@ -99,7 +70,39 @@ namespace Aubio.NET.Vectors
 
         #endregion
 
-        #region AubioObject Members
+        #region Public Members
+
+        internal unsafe LVec([NotNull] LVec__* lVec, bool isDisposable = true)
+            : base(isDisposable)
+        {
+            if (lVec == null)
+                throw new ArgumentNullException(nameof(lVec));
+
+            _lVec = lVec;
+        }
+
+        [PublicAPI]
+        public unsafe LVec(int length)
+        {
+            if (length <= 0)
+                throw new ArgumentOutOfRangeException(nameof(length));
+
+            var lVec = new_lvec(length.ToUInt32());
+            if (lVec == null)
+                throw new ArgumentNullException(nameof(lVec));
+
+            _lVec = new_lvec(length.ToUInt32());
+        }
+
+        [PublicAPI]
+        public unsafe double* GetData()
+        {
+            return lvec_get_data(this);
+        }
+
+        #endregion
+
+        #region Overrides of AubioObject
 
         protected override void DisposeNative()
         {

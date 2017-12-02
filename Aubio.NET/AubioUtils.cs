@@ -1,7 +1,9 @@
 ﻿using System.Runtime.InteropServices;
+using JetBrains.Annotations;
 
 namespace Aubio.NET
 {
+    [PublicAPI]
     public static class AubioUtils
     {
         public static void Cleanup()

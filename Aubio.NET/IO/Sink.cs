@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security;
 using Aubio.NET.Vectors;
@@ -14,7 +15,15 @@ namespace Aubio.NET.IO
         #region Fields
 
         [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly unsafe Sink__* _sink;
+
+        #endregion
+
+        #region Implementation of ISampler
+
+        [PublicAPI]
+        public int SampleRate => aubio_sink_get_samplerate(this).ToInt32();
 
         #endregion
 
@@ -38,9 +47,6 @@ namespace Aubio.NET.IO
 
         [PublicAPI]
         public int Channels => aubio_sink_get_channels(this).ToInt32();
-
-        [PublicAPI]
-        public int SampleRate => aubio_sink_get_samplerate(this).ToInt32();
 
         [PublicAPI]
         public void Close()

@@ -5,6 +5,9 @@ using JetBrains.Annotations;
 
 namespace Aubio.NET.Utilities
 {
+    /// <summary>
+    ///     https://aubio.org/doc/latest/parameter_8h.html
+    /// </summary>
     public sealed class Parameter : AubioObject
     {
         #region Fields 
@@ -15,20 +18,19 @@ namespace Aubio.NET.Utilities
 
         #endregion
 
-        #region Constructors
+        #region Public Members
 
         public unsafe Parameter(float minValue, float maxValue, int steps)
         {
+            if (steps <= 0)
+                throw new ArgumentOutOfRangeException(nameof(steps));
+
             var parameter = new_aubio_parameter(minValue, maxValue, steps.ToUInt32());
             if (parameter == null)
                 throw new ArgumentNullException(nameof(parameter));
 
             _parameter = parameter;
         }
-
-        #endregion
-
-        #region Public Members
 
         [PublicAPI]
         public float Current
@@ -88,7 +90,7 @@ namespace Aubio.NET.Utilities
 
         #endregion
 
-        #region AubioObject Members
+        #region Overrides of AubioObject
 
         protected override void DisposeNative()
         {
@@ -109,6 +111,12 @@ namespace Aubio.NET.Utilities
             float minValue,
             float maxValue,
             uint steps
+        );
+
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void del_aubio_parameter(
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
+            Parameter parameter
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
@@ -177,12 +185,6 @@ namespace Aubio.NET.Utilities
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern uint aubio_parameter_get_steps(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            Parameter parameter
-        );
-
-        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void del_aubio_parameter(
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
             Parameter parameter
         );

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Aubio.NET.Vectors;
 using JetBrains.Annotations;
@@ -13,11 +14,19 @@ namespace Aubio.NET.IO
         #region Fields
 
         [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly unsafe Source__* _source;
 
         #endregion
 
-        #region Constructors
+        #region Implementation of ISampler
+
+        [PublicAPI]
+        public int SampleRate => aubio_source_get_samplerate(this).ToInt32();
+
+        #endregion
+
+        #region Public Members
 
         [PublicAPI]
         public unsafe Source([NotNull] string uri, int sampleRate = 44100, int hopSize = 256)
@@ -38,10 +47,6 @@ namespace Aubio.NET.IO
             _source = source;
         }
 
-        #endregion
-
-        #region Public Members
-
         [PublicAPI]
         public int Channels => aubio_source_get_channels(this).ToInt32();
 
@@ -55,9 +60,6 @@ namespace Aubio.NET.IO
                 return time;
             }
         }
-
-        [PublicAPI]
-        public int SampleRate => aubio_source_get_samplerate(this).ToInt32();
 
         [PublicAPI]
         public void Close()
@@ -117,6 +119,18 @@ namespace Aubio.NET.IO
         #region Native methods
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe Source__* new_aubio_source(
+            [MarshalAs(UnmanagedType.LPStr)] string uri,
+            uint sampleRate,
+            uint hopSize
+        );
+
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void del_aubio_source(
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Source source
+        );
+
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool aubio_source_close(
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Source source
@@ -156,18 +170,6 @@ namespace Aubio.NET.IO
         private static extern bool aubio_source_seek(
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Source source,
             uint position
-        );
-
-        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern unsafe Source__* new_aubio_source(
-            [MarshalAs(UnmanagedType.LPStr)] string uri,
-            uint sampleRate,
-            uint hopSize
-        );
-
-        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void del_aubio_source(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Source source
         );
 
         #endregion

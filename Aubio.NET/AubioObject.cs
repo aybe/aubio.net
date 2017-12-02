@@ -55,18 +55,6 @@ namespace Aubio.NET
         }
 
         [PublicAPI]
-        protected internal void ThrowIfNot(bool condition, [CanBeNull] string message = null)
-        {
-            if (!condition)
-                return;
-
-            if (string.IsNullOrEmpty(message))
-                throw new InvalidOperationException();
-
-            throw new InvalidOperationException(message);
-        }
-
-        [PublicAPI]
         internal abstract IntPtr ToPointer();
     }
 }

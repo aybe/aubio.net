@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security;
 using Aubio.NET.Vectors;
@@ -9,12 +10,19 @@ namespace Aubio.NET.Spectral
     /// <summary>
     ///     https://aubio.org/doc/latest/awhitening_8h.html
     /// </summary>
-    public sealed class SpectralAdaptiveWhitening : AubioObject
+    public sealed class SpectralAdaptiveWhitening : AubioObject, ISampler
     {
         #region Fields
 
         [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly unsafe SpectralAdaptiveWhitening__* _whitening;
+
+        #endregion
+
+        #region Implementation of ISampler
+
+        public int SampleRate { get; }
 
         #endregion
 
@@ -31,6 +39,8 @@ namespace Aubio.NET.Spectral
 
             if (sampleRate <= 0)
                 throw new ArgumentOutOfRangeException(nameof(sampleRate));
+
+            SampleRate = sampleRate;
 
             var whitening = new_aubio_spectral_whitening(
                 bufferSize.ToUInt32(), hopSize.ToUInt32(), sampleRate.ToUInt32());

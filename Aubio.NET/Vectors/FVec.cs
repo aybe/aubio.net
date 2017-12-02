@@ -17,51 +17,7 @@ namespace Aubio.NET.Vectors
 
         [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly unsafe FVec__* _vec;
-
-        #endregion
-
-        #region Constructors
-
-        [PublicAPI]
-        internal unsafe FVec(int length, bool isDisposable)
-            : base(isDisposable)
-        {
-            if (length <= 0)
-                throw new ArgumentOutOfRangeException(nameof(length));
-
-            var fVec = new_fvec(length.ToUInt32());
-            if (fVec == null)
-                throw new ArgumentNullException(nameof(fVec));
-
-            _vec = fVec;
-        }
-
-        [PublicAPI]
-        public unsafe FVec(int length)
-        {
-            if (length <= 0)
-                throw new ArgumentOutOfRangeException(nameof(length));
-
-            var fVec = new_fvec(length.ToUInt32());
-            if (fVec == null)
-                throw new ArgumentNullException(nameof(fVec));
-
-            _vec = fVec;
-        }
-
-        [PublicAPI]
-        public unsafe FVec(int length, FVecWindowType windowType)
-        {
-            if (length <= 0)
-                throw new ArgumentOutOfRangeException(nameof(length));
-
-            var fVec = new_aubio_window2(windowType, length.ToUInt32());
-            if (fVec == null)
-                throw new ArgumentNullException(nameof(fVec));
-
-            _vec = fVec;
-        }
+        private readonly unsafe FVec__* _fVec;
 
         #endregion
 
@@ -85,7 +41,25 @@ namespace Aubio.NET.Vectors
             }
         }
 
-        public unsafe int Length => _vec->Length.ToInt32();
+        public unsafe int Length => _fVec->Length.ToInt32();
+
+        [PublicAPI]
+        public void SetAll(float value)
+        {
+            fvec_set_all(this, value);
+        }
+
+        [PublicAPI]
+        public void Ones()
+        {
+            fvec_ones(this);
+        }
+
+        [PublicAPI]
+        public void Zeros()
+        {
+            fvec_zeros(this);
+        }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
@@ -99,21 +73,50 @@ namespace Aubio.NET.Vectors
 
         #endregion
 
-        #region Disposable Members
-
-        protected override void DisposeNative()
-        {
-            del_fvec(this);
-        }
-
-        internal override unsafe IntPtr ToPointer()
-        {
-            return new IntPtr(_vec);
-        }
-
-        #endregion
-
         #region Public Members
+
+        [PublicAPI]
+        internal unsafe FVec(int length, bool isDisposable)
+            : base(isDisposable)
+        {
+            if (length <= 0)
+                throw new ArgumentOutOfRangeException(nameof(length));
+
+            var fVec = new_fvec(length.ToUInt32());
+            if (fVec == null)
+                throw new ArgumentNullException(nameof(fVec));
+
+            _fVec = fVec;
+        }
+
+        [PublicAPI]
+        public unsafe FVec(int length)
+        {
+            if (length <= 0)
+                throw new ArgumentOutOfRangeException(nameof(length));
+
+            var fVec = new_fvec(length.ToUInt32());
+            if (fVec == null)
+                throw new ArgumentNullException(nameof(fVec));
+
+            _fVec = fVec;
+        }
+
+        [PublicAPI]
+        public unsafe FVec(int length, FVecWindowType windowType)
+        {
+            if (length <= 0)
+                throw new ArgumentOutOfRangeException(nameof(length));
+
+            var attribute = windowType.GetDescriptionAttribute();
+            var description = attribute.Description;
+
+            var fVec = new_aubio_window(description, length.ToUInt32());
+            if (fVec == null)
+                throw new ArgumentNullException(nameof(fVec));
+
+            _fVec = fVec;
+        }
 
         [PublicAPI]
         public void Copy([NotNull] FVec target)
@@ -140,21 +143,9 @@ namespace Aubio.NET.Vectors
         }
 
         [PublicAPI]
-        public void SetAll(float value)
-        {
-            fvec_set_all(this, value);
-        }
-
-        [PublicAPI]
         public void Print()
         {
             fvec_print(this);
-        }
-
-        [PublicAPI]
-        public void Ones()
-        {
-            fvec_ones(this);
         }
 
         [PublicAPI]
@@ -178,15 +169,42 @@ namespace Aubio.NET.Vectors
             fvec_weighted_copy(this, weight, output);
         }
 
-        [PublicAPI]
-        public void Zeros()
+        #endregion
+
+        #region Overrides of AubioObject
+
+        protected override void DisposeNative()
         {
-            fvec_zeros(this);
+            del_fvec(this);
+        }
+
+        internal override unsafe IntPtr ToPointer()
+        {
+            return new IntPtr(_fVec);
         }
 
         #endregion
 
         #region Native methods
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe FVec__* new_fvec(
+            uint length
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe FVec__* new_aubio_window(
+            [MarshalAs(UnmanagedType.LPStr)] string windowType,
+            uint length
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void del_fvec(
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec fVec
+        );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
@@ -260,25 +278,6 @@ namespace Aubio.NET.Vectors
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern void fvec_zeros(
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec fVec
-        );
-
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void del_fvec(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec fVec
-        );
-
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern unsafe FVec__* new_fvec(
-            uint length
-        );
-
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern unsafe FVec__* new_aubio_window2(
-            [MarshalAs(UnmanagedType.I4)] FVecWindowType windowType,
-            uint length
         );
 
         #endregion

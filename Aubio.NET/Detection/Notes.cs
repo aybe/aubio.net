@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security;
 using Aubio.NET.Vectors;
@@ -9,14 +10,22 @@ namespace Aubio.NET.Detection
     /// <summary>
     ///     https://aubio.org/doc/latest/notes_8h.html
     /// </summary>
-    public sealed class Notes : AubioObject
+    public sealed class Notes : AubioObject, ISampler
     {
         #region Fields
 
+        [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private readonly unsafe Notes__* _notes;
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly int _sampleRate;
 
-        [NotNull]
-        private readonly unsafe Notes__* _notes;
+        #endregion
+
+        #region Implementation of ISampler
+
+        public int SampleRate => _sampleRate;
 
         #endregion
 
@@ -33,7 +42,7 @@ namespace Aubio.NET.Detection
 
             if (sampleRate <= 0)
                 throw new ArgumentOutOfRangeException(nameof(sampleRate));
-
+            
             _sampleRate = sampleRate;
 
             var notes = new_aubio_notes("default", bufferSize.ToUInt32(), hopSize.ToUInt32(), sampleRate.ToUInt32());
@@ -98,7 +107,7 @@ namespace Aubio.NET.Detection
 
         #endregion
 
-        #region Native methods
+        #region Native Methods
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]

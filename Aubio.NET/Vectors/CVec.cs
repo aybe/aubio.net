@@ -8,6 +8,9 @@ using JetBrains.Annotations;
 
 namespace Aubio.NET.Vectors
 {
+    /// <summary>
+    ///     https://aubio.org/doc/latest/cvec_8h.html
+    /// </summary>
     public sealed class CVec : AubioObject, IVector<CVecComplex>
     {
         #region Fields
@@ -18,41 +21,7 @@ namespace Aubio.NET.Vectors
 
         #endregion
 
-        #region Constructors
-
-        [PublicAPI]
-        public unsafe CVec(int length)
-        {
-            if (length <= 0)
-                throw new ArgumentOutOfRangeException(nameof(length));
-
-            var cVec = new_cvec(length.ToUInt32());
-            if (cVec == null)
-                throw new ArgumentNullException(nameof(cVec));
-
-            _cVec = cVec;
-
-            Norm = new CVecBufferNorm(this, cVec->Norm, cVec->Length.ToInt32());
-            Phas = new CVecBufferPhas(this, cVec->Phas, cVec->Length.ToInt32());
-        }
-
-        #endregion
-
-        #region AubioObject members
-
-        protected override void DisposeNative()
-        {
-            del_cvec(this);
-        }
-
-        internal override unsafe IntPtr ToPointer()
-        {
-            return new IntPtr(_cVec);
-        }
-
-        #endregion
-
-        #region Public members
+        #region Implementation of IVector<CVecComplex>
 
         public CVecComplex this[int index]
         {
@@ -78,36 +47,6 @@ namespace Aubio.NET.Vectors
 
         [PublicAPI]
         public unsafe int Length => _cVec->Length.ToInt32();
-
-        [PublicAPI]
-        public IVector<float> Norm { get; }
-
-        [PublicAPI]
-        public IVector<float> Phas { get; }
-
-        [PublicAPI]
-        public void Copy([NotNull] CVec target)
-        {
-            if (target == null)
-                throw new ArgumentNullException(nameof(target));
-
-            if (target.Length != Length)
-                throw new ArgumentOutOfRangeException(nameof(target));
-
-            cvec_copy(this, target);
-        }
-
-        [PublicAPI]
-        public void LogMag(float lambda)
-        {
-            cvec_logmag(this, lambda);
-        }
-
-        [PublicAPI]
-        public void Print()
-        {
-            cvec_print(this);
-        }
 
         public void SetAll(CVecComplex complex)
         {
@@ -139,7 +78,71 @@ namespace Aubio.NET.Vectors
 
         #endregion
 
-        #region Native methods
+        #region Public members
+
+        [PublicAPI]
+        public unsafe CVec(int length)
+        {
+            if (length <= 0)
+                throw new ArgumentOutOfRangeException(nameof(length));
+
+            var cVec = new_cvec(length.ToUInt32());
+            if (cVec == null)
+                throw new ArgumentNullException(nameof(cVec));
+
+            _cVec = cVec;
+
+            Norm = new CVecBufferNorm(this, cVec->Norm, cVec->Length.ToInt32()); // length is different here !
+            Phas = new CVecBufferPhas(this, cVec->Phas, cVec->Length.ToInt32()); // length is different here !
+        }
+
+        [PublicAPI]
+        public IVector<float> Norm { get; }
+
+        [PublicAPI]
+        public IVector<float> Phas { get; }
+
+        [PublicAPI]
+        public void Copy([NotNull] CVec target)
+        {
+            if (target == null)
+                throw new ArgumentNullException(nameof(target));
+
+            if (target.Length != Length)
+                throw new ArgumentOutOfRangeException(nameof(target));
+
+            cvec_copy(this, target);
+        }
+
+        [PublicAPI]
+        public void LogMag(float lambda)
+        {
+            cvec_logmag(this, lambda);
+        }
+
+        [PublicAPI]
+        public void Print()
+        {
+            cvec_print(this);
+        }
+
+        #endregion
+
+        #region Overrides of AubioObject
+
+        protected override void DisposeNative()
+        {
+            del_cvec(this);
+        }
+
+        internal override unsafe IntPtr ToPointer()
+        {
+            return new IntPtr(_cVec);
+        }
+
+        #endregion
+
+        #region Native Methods
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]

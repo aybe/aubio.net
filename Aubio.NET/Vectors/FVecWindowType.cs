@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using JetBrains.Annotations;
 
 namespace Aubio.NET.Vectors
@@ -5,16 +6,37 @@ namespace Aubio.NET.Vectors
     [PublicAPI]
     public enum FVecWindowType
     {
-        Ones = 0,
-        Rectangle = 1,
-        Hamming = 2,
-        Hanning = 3,
-        Hanningz = 4,
-        Blackman = 5,
-        BlackmanHarris = 6,
-        Gaussian = 7,
-        Welch = 8,
-        Parzen = 9,
-        Default = 10
+        [Description("default")]
+        Default,
+
+        [Description("ones")]
+        Ones,
+
+        [Description("rectangle")]
+        Rectangle,
+
+        [Description("hamming")]
+        Hamming,
+
+        [Description("hanning")]
+        Hanning,
+
+        [Description("hanningz")]
+        Hanningz,
+
+        [Description("blackman")]
+        Blackman,
+
+        [Description("blackman_harris")]
+        BlackmanHarris,
+
+        [Description("gaussian")]
+        Gaussian,
+
+        [Description("welch")]
+        Welch,
+
+        [Description("parzen")]
+        Parzen
     }
 }
