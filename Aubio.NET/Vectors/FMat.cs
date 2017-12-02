@@ -17,6 +17,15 @@ namespace Aubio.NET.Vectors
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly unsafe FMat__* _fMat;
 
+        internal unsafe FMat([NotNull] FMat__* fMat, bool isDisposable) 
+            : base(isDisposable)
+        {
+            if (fMat == null)
+                throw new ArgumentNullException(nameof(fMat));
+
+            _fMat = fMat;
+        }
+
         #endregion
 
         #region Constructors
