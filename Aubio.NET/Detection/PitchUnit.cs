@@ -1,13 +1,24 @@
-﻿using JetBrains.Annotations;
+﻿using System.ComponentModel;
+using JetBrains.Annotations;
 
 namespace Aubio.NET.Detection
 {
     [PublicAPI]
     public enum PitchUnit
     {
-        Hertz = 0,
-        Midi = 1,
-        Cent = 2,
-        Bin = 3
+        [Description("default")]
+        Default = 0,
+
+        [Description("hertz")]
+        Hertz,
+
+        [Description("midi")]
+        Midi,
+
+        [Description("cent")]
+        Cent,
+
+        [Description("bin")]
+        Bin
     }
 }

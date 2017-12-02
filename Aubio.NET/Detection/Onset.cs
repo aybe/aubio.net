@@ -24,7 +24,7 @@ namespace Aubio.NET.Detection
         #region Public Members
 
         [PublicAPI]
-        public unsafe Onset(OnsetDetection detection, int bufferSize, int hopSize, int sampleRate)
+        public unsafe Onset(OnsetDetection detection, int bufferSize = 1024, int hopSize = 256, int sampleRate = 44100)
         {
             var attribute = detection.GetDescriptionAttribute();
             var method = attribute.Description;

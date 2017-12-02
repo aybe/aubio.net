@@ -1,8 +1,10 @@
 ﻿using System;
 using Aubio.NET.Vectors;
+using JetBrains.Annotations;
 
 namespace Aubio.NET.Detection
 {
+    [PublicAPI]
     public static class TempoExtensions
     {
         public static bool HasBeat(this Tempo tempo, FVec output)

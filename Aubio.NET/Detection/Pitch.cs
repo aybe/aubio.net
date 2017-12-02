@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security;
 using Aubio.NET.Vectors;
@@ -11,16 +10,17 @@ namespace Aubio.NET.Detection
     {
         #region Fields
 
+        private PitchUnit _unit = PitchUnit.Default;
+
         [NotNull]
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly unsafe Pitch__* _pitch;
 
         #endregion
 
-        #region Constructors
+        #region Public Members
 
         [PublicAPI]
-        public unsafe Pitch(PitchMethod method, int bufferSize = 1024, int hopSize = 256, int sampleRate = 44100)
+        public unsafe Pitch(PitchDetection detection, int bufferSize = 1024, int hopSize = 256, int sampleRate = 44100)
         {
             if (bufferSize <= 1)
                 throw new ArgumentOutOfRangeException(nameof(bufferSize));
@@ -34,16 +34,15 @@ namespace Aubio.NET.Detection
             if (sampleRate <= 0)
                 throw new ArgumentOutOfRangeException(nameof(sampleRate));
 
-            var pitch = new_aubio_pitch2(method, bufferSize.ToUInt32(), hopSize.ToUInt32(), sampleRate.ToUInt32());
+            var attribute = detection.GetDescriptionAttribute();
+            var method = attribute.Description;
+
+            var pitch = new_aubio_pitch(method, bufferSize.ToUInt32(), hopSize.ToUInt32(), sampleRate.ToUInt32());
             if (pitch == null)
                 throw new ArgumentNullException(nameof(pitch));
 
             _pitch = pitch;
         }
-
-        #endregion
-
-        #region Public Members
 
         [PublicAPI]
         public float Confidence => aubio_pitch_get_confidence(this);
@@ -73,8 +72,17 @@ namespace Aubio.NET.Detection
         [PublicAPI]
         public PitchUnit Unit
         {
-            get => aubio_pitch_get_mode(this);
-            set => aubio_pitch_set_mode(this, value);
+            get => _unit;
+            set
+            {
+                var attribute = value.GetDescriptionAttribute();
+                var description = attribute.Description;
+
+                if (aubio_pitch_set_unit(this, description))
+                    throw new ArgumentOutOfRangeException(nameof(value));
+
+                _unit = value;
+            }
         }
 
         [PublicAPI]
@@ -91,7 +99,7 @@ namespace Aubio.NET.Detection
 
         #endregion
 
-        #region AubioObject Members
+        #region Overrides of AubioObject
 
         protected override void DisposeNative()
         {
@@ -109,8 +117,8 @@ namespace Aubio.NET.Detection
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern unsafe Pitch__* new_aubio_pitch2(
-            [MarshalAs(UnmanagedType.I4)] PitchMethod method,
+        private static extern unsafe Pitch__* new_aubio_pitch(
+            [MarshalAs(UnmanagedType.LPStr)] string method,
             uint bufferSize,
             uint hopSize,
             uint sampleRate
@@ -166,15 +174,10 @@ namespace Aubio.NET.Detection
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern PitchUnit aubio_pitch_get_mode(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Pitch pitch
-        );
-
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_pitch_set_mode(
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool aubio_pitch_set_unit(
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Pitch pitch,
-            [MarshalAs(UnmanagedType.I4)] PitchUnit unit
+            [MarshalAs(UnmanagedType.LPStr)] string pitchUnit
         );
 
         #endregion
