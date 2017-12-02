@@ -34,7 +34,7 @@ namespace Aubio.NET.IO
             if (uri == null)
                 throw new ArgumentNullException(nameof(uri));
 
-            if (sampleRate <= 0)
+            if (sampleRate < 0)
                 throw new ArgumentOutOfRangeException(nameof(sampleRate));
 
             if (hopSize <= 0)
