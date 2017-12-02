@@ -22,8 +22,11 @@ namespace Aubio.NET.Spectral
         #region Public Members
 
         [PublicAPI]
-        public unsafe SpectralDescription(SpectralDescriptor descriptor, int bufferSize)
+        public unsafe SpectralDescription(SpectralDescriptor descriptor, int bufferSize = 1024)
         {
+            if (bufferSize <= 0)
+                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+
             var description = descriptor.GetAttribute<DescriptionAttribute>();
             if (description == null)
                 throw new ArgumentNullException(nameof(description));

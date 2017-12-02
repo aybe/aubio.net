@@ -6,6 +6,9 @@ using JetBrains.Annotations;
 
 namespace Aubio.NET.Spectral
 {
+    /// <summary>
+    ///     https://aubio.org/doc/latest/mfcc_8h.html
+    /// </summary>
     public sealed class Mfcc : AubioObject
     {
         #region Fields
@@ -18,8 +21,20 @@ namespace Aubio.NET.Spectral
         #region Public Members
 
         [PublicAPI]
-        public unsafe Mfcc(int bufferSize, int filters, int coefficients, int sampleRate)
+        public unsafe Mfcc(int bufferSize, int filters, int coefficients, int sampleRate = 44100)
         {
+            if (bufferSize <= 0)
+                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+
+            if (filters <= 0)
+                throw new ArgumentOutOfRangeException(nameof(filters));
+
+            if (coefficients <= 0)
+                throw new ArgumentOutOfRangeException(nameof(coefficients));
+
+            if (sampleRate <= 0)
+                throw new ArgumentOutOfRangeException(nameof(sampleRate));
+
             var mfcc = new_aubio_mfcc(
                 bufferSize.ToUInt32(), filters.ToUInt32(), coefficients.ToUInt32(), sampleRate.ToUInt32());
             if (mfcc == null)

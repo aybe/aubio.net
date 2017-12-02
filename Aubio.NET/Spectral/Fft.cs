@@ -23,6 +23,9 @@ namespace Aubio.NET.Spectral
         [PublicAPI]
         public unsafe Fft(int size)
         {
+            if (size < 2)
+                throw new ArgumentOutOfRangeException(nameof(size));
+
             var fft = new_aubio_fft(size.ToUInt32());
             if (fft == null)
                 throw new ArgumentNullException(nameof(fft));

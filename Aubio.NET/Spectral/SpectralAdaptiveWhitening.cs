@@ -21,8 +21,17 @@ namespace Aubio.NET.Spectral
         #region Public Members
 
         [PublicAPI]
-        public unsafe SpectralAdaptiveWhitening(int bufferSize, int hopSize, int sampleRate)
+        public unsafe SpectralAdaptiveWhitening(int bufferSize = 1024, int hopSize = 256, int sampleRate = 44100)
         {
+            if (bufferSize <= 0)
+                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+
+            if (hopSize <= 0)
+                throw new ArgumentOutOfRangeException(nameof(hopSize));
+
+            if (sampleRate <= 0)
+                throw new ArgumentOutOfRangeException(nameof(sampleRate));
+
             var whitening = new_aubio_spectral_whitening(
                 bufferSize.ToUInt32(), hopSize.ToUInt32(), sampleRate.ToUInt32());
             if (whitening == null)

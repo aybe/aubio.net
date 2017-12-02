@@ -25,8 +25,14 @@ namespace Aubio.NET.Spectral
         #region Public Members
 
         [PublicAPI]
-        public unsafe TransientSteadyStateSeparation(int bufferSize, int hopSize)
+        public unsafe TransientSteadyStateSeparation(int bufferSize = 1024, int hopSize = 256)
         {
+            if (bufferSize <= 0)
+                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+
+            if (hopSize <= 0)
+                throw new ArgumentOutOfRangeException(nameof(hopSize));
+
             var tss = new_aubio_tss(bufferSize.ToUInt32(), hopSize.ToUInt32());
             if (tss == null)
                 throw new ArgumentNullException(nameof(tss));
@@ -112,7 +118,7 @@ namespace Aubio.NET.Spectral
             uint bufferSize,
             uint hopSize
         );
-        
+
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern void del_aubio_tss(

@@ -6,6 +6,10 @@ using JetBrains.Annotations;
 
 namespace Aubio.NET.Spectral
 {
+    /// <summary>
+    ///     https://aubio.org/doc/latest/filterbank_8h.html
+    ///     https://aubio.org/doc/latest/filterbank__mel_8h.html
+    /// </summary>
     public sealed class Filterbank : AubioObject
     {
         #region Fields
@@ -20,6 +24,12 @@ namespace Aubio.NET.Spectral
         [PublicAPI]
         public unsafe Filterbank(int filters, int windowSize)
         {
+            if (filters <= 0)
+                throw new ArgumentOutOfRangeException(nameof(filters));
+
+            if (windowSize <= 0)
+                throw new ArgumentOutOfRangeException(nameof(windowSize));
+
             var filterbank = new_aubio_filterbank(filters.ToUInt32(), windowSize.ToUInt32());
             if (filterbank == null)
                 throw new ArgumentNullException(nameof(filterbank));
