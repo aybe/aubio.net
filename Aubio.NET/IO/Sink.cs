@@ -6,6 +6,9 @@ using JetBrains.Annotations;
 
 namespace Aubio.NET.IO
 {
+    /// <summary>
+    ///     https://aubio.org/doc/latest/sink_8h.html
+    /// </summary>
     public sealed class Sink : AubioObject, ISampler
     {
         #region Fields
@@ -40,9 +43,10 @@ namespace Aubio.NET.IO
         public int SampleRate => aubio_sink_get_samplerate(this).ToInt32();
 
         [PublicAPI]
-        public bool Close()
+        public void Close()
         {
-            return aubio_sink_close(this);
+            if (aubio_sink_close(this))
+                throw new InvalidOperationException();
         }
 
         [PublicAPI]
@@ -89,7 +93,7 @@ namespace Aubio.NET.IO
 
         #endregion
 
-        #region AubioObject Members
+        #region Overrides of AubioObject
 
         protected override void DisposeNative()
         {
