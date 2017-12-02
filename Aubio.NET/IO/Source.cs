@@ -20,7 +20,7 @@ namespace Aubio.NET.IO
         #region Constructors
 
         [PublicAPI]
-        public unsafe Source([NotNull] string uri, int sampleRate, int hopSize)
+        public unsafe Source([NotNull] string uri, int sampleRate = 44100, int hopSize = 256)
         {
             if (uri == null)
                 throw new ArgumentNullException(nameof(uri));
