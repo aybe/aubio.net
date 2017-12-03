@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>Aubio.NET.UWP.Native</id>
+        <version>1.0.0</version>
+        <authors>Aybe</authors>
+        <projectUrl>https://github.com/aybe/aubio.net</projectUrl>
+        <iconUrl>https://github.com/aybe/aubio.net/raw/master/aubio_logo.png</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Aubio for .NET (native dependencies)</description>
+    </metadata>
+    <files>
+        <file src="build\native\x64-uwp\aubio.dll" target="build\native\x64\aubio.dll" />
+        <file src="build\native\x64-uwp\avcodec-57.dll" target="build\native\x64\avcodec-57.dll" />
+        <file src="build\native\x64-uwp\avdevice-57.dll" target="build\native\x64\avdevice-57.dll" />
+        <file src="build\native\x64-uwp\avfilter-6.dll" target="build\native\x64\avfilter-6.dll" />
+        <file src="build\native\x64-uwp\avformat-57.dll" target="build\native\x64\avformat-57.dll" />
+        <file src="build\native\x64-uwp\avutil-55.dll" target="build\native\x64\avutil-55.dll" />
+        <file src="build\native\x64-uwp\flac++.dll" target="build\native\x64\flac++.dll" />
+        <file src="build\native\x64-uwp\flac.dll" target="build\native\x64\flac.dll" />
+        <file src="build\native\x64-uwp\libsndfile-1.dll" target="build\native\x64\libsndfile-1.dll" />
+        <file src="build\native\x64-uwp\ogg.dll" target="build\native\x64\ogg.dll" />
+        <file src="build\native\x64-uwp\swresample-2.dll" target="build\native\x64\swresample-2.dll" />
+        <file src="build\native\x64-uwp\swscale-4.dll" target="build\native\x64\swscale-4.dll" />
+        <file src="build\native\x64-uwp\vorbis.dll" target="build\native\x64\vorbis.dll" />
+        <file src="build\native\x64-uwp\vorbisenc.dll" target="build\native\x64\vorbisenc.dll" />
+        <file src="build\native\x64-uwp\vorbisfile.dll" target="build\native\x64\vorbisfile.dll" />
+        <file src="build\native\x86-uwp\aubio.dll" target="build\native\x86\aubio.dll" />
+        <file src="build\native\x86-uwp\avcodec-57.dll" target="build\native\x86\avcodec-57.dll" />
+        <file src="build\native\x86-uwp\avdevice-57.dll" target="build\native\x86\avdevice-57.dll" />
+        <file src="build\native\x86-uwp\avfilter-6.dll" target="build\native\x86\avfilter-6.dll" />
+        <file src="build\native\x86-uwp\avformat-57.dll" target="build\native\x86\avformat-57.dll" />
+        <file src="build\native\x86-uwp\avutil-55.dll" target="build\native\x86\avutil-55.dll" />
+        <file src="build\native\x86-uwp\flac++.dll" target="build\native\x86\flac++.dll" />
+        <file src="build\native\x86-uwp\flac.dll" target="build\native\x86\flac.dll" />
+        <file src="build\native\x86-uwp\libsndfile-1.dll" target="build\native\x86\libsndfile-1.dll" />
+        <file src="build\native\x86-uwp\ogg.dll" target="build\native\x86\ogg.dll" />
+        <file src="build\native\x86-uwp\swresample-2.dll" target="build\native\x86\swresample-2.dll" />
+        <file src="build\native\x86-uwp\swscale-4.dll" target="build\native\x86\swscale-4.dll" />
+        <file src="build\native\x86-uwp\vorbis.dll" target="build\native\x86\vorbis.dll" />
+        <file src="build\native\x86-uwp\vorbisenc.dll" target="build\native\x86\vorbisenc.dll" />
+        <file src="build\native\x86-uwp\vorbisfile.dll" target="build\native\x86\vorbisfile.dll" />
+        <file src="build\Aubio.NET.Native.targets" target="build\Aubio.NET.Native.targets" />
+    </files>
+</package>

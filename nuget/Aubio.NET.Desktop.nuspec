@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>Aubio.NET.Desktop</id>
+        <version>1.0.0</version>
+        <authors>Aybe</authors>
+        <projectUrl>https://github.com/aybe/aubio.net</projectUrl>
+        <iconUrl>https://github.com/aybe/aubio.net/raw/master/aubio_logo.png</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Aubio for .NET</description>
+        <language>en-US</language>
+        <dependencies>
+            <dependency id="Aubio.NET.Desktop.Native" version="$version$" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="..\Aubio.NET\bin\Debug\netstandard2.0\Aubio.NET.dll" target="lib\netstandard2.0\Aubio.NET.dll" />
+        <file src="tools\uninstall.ps1" target="tools\uninstall.ps1" />
+    </files>
+</package>
