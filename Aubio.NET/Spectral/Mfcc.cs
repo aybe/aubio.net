@@ -14,9 +14,10 @@ namespace Aubio.NET.Spectral
     {
         #region Fields
 
+        [PublicAPI]
         [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly unsafe Mfcc__* _mfcc;
+        internal readonly unsafe Mfcc__* Handle;
 
         #endregion
 
@@ -45,16 +46,15 @@ namespace Aubio.NET.Spectral
 
             SampleRate = sampleRate;
 
-            var mfcc = new_aubio_mfcc(
-                bufferSize.ToUInt32(), filters.ToUInt32(), coefficients.ToUInt32(), sampleRate.ToUInt32());
-            if (mfcc == null)
-                throw new ArgumentNullException(nameof(mfcc));
+            var handle = new_aubio_mfcc((uint) bufferSize, (uint) filters, (uint) coefficients, (uint) sampleRate);
+            if (handle == null)
+                throw new ArgumentNullException(nameof(handle));
 
-            _mfcc = mfcc;
+            Handle = handle;
         }
 
         [PublicAPI]
-        public void Do([NotNull] CVec input, [NotNull] CVec output)
+        public unsafe void Do([NotNull] CVec input, [NotNull] CVec output)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
@@ -62,21 +62,21 @@ namespace Aubio.NET.Spectral
             if (output == null)
                 throw new ArgumentNullException(nameof(output));
 
-            aubio_mfcc_do(this, input, output);
+            aubio_mfcc_do(Handle, input.Handle, output.Handle);
         }
 
         #endregion
 
         #region Overrides of AubioObject
 
-        protected override void DisposeNative()
+        protected override unsafe void DisposeNative()
         {
-            del_aubio_mfcc(this);
+            del_aubio_mfcc(Handle);
         }
 
         internal override unsafe IntPtr ToPointer()
         {
-            return new IntPtr(_mfcc);
+            return new IntPtr(Handle);
         }
 
         #endregion
@@ -94,16 +94,16 @@ namespace Aubio.NET.Spectral
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void del_aubio_mfcc(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Mfcc mfcc
+        private static extern unsafe void del_aubio_mfcc(
+            Mfcc__* mfcc
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_mfcc_do(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Mfcc mfcc,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec input,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec output
+        private static extern unsafe void aubio_mfcc_do(
+            Mfcc__* mfcc,
+            CVec__* input,
+            CVec__* output
         );
 
         #endregion
