@@ -12,6 +12,7 @@ namespace Aubio.NET
     /// <summary>
     ///     Loads native dependencies for Aubio.NET.
     /// </summary>
+    [PublicAPI]
     public static class AubioLoader
     {
         private static IntPtr Cookie { get; set; } = IntPtr.Zero;
@@ -27,10 +28,13 @@ namespace Aubio.NET
             if (Cookie != IntPtr.Zero)
                 throw new InvalidOperationException($"You can only call '{nameof(Load)}' once.");
 
-            var directory = GetDependenciesDirectory(x86, x64);
-
             if (!NativeMethods.SetDefaultDllDirectories(NativeConstants.LOAD_LIBRARY_SEARCH_DEFAULT_DIRS))
                 throw new Win32Exception();
+
+            var directory = GetDependenciesDirectory(x86, x64);
+
+            if (string.IsNullOrEmpty(directory))
+                return; // dependencies are in application directory
 
             var path = Path.Combine(Environment.CurrentDirectory, directory);
 
@@ -44,7 +48,7 @@ namespace Aubio.NET
         public static void Free()
         {
             if (Cookie == IntPtr.Zero)
-                throw new InvalidOperationException($"You must call '{nameof(Load)}' first.");
+                return;
 
             if (!NativeMethods.RemoveDllDirectory(Cookie))
                 throw new Win32Exception();
@@ -67,16 +71,12 @@ namespace Aubio.NET
             module.GetPEKind(out var kind, out var _);
 
             if (!kind.HasFlag(PortableExecutableKinds.ILOnly))
-                throw new PlatformNotSupportedException(); // whatever
+                throw new PlatformNotSupportedException(); // guard
 
-            if (kind.HasFlag(PortableExecutableKinds.Preferred32Bit) ||
-                kind.HasFlag(PortableExecutableKinds.Required32Bit))
-                return x86;
+            if (kind.HasFlag(PortableExecutableKinds.Required32Bit) || kind.HasFlag(PortableExecutableKinds.PE32Plus))
+                return string.Empty; // in application directory
 
-            if (kind.HasFlag(PortableExecutableKinds.PE32Plus))
-                return x86;
-
-            throw new PlatformNotSupportedException();
+            return kind.HasFlag(PortableExecutableKinds.Preferred32Bit) ? x86 : x64;
         }
     }
 }
