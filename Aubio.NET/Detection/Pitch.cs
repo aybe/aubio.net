@@ -9,13 +9,12 @@ namespace Aubio.NET.Detection
 {
     public sealed class Pitch : AubioObject, ISampler
     {
-        private readonly int _sampleRate;
-
         #region Fields
 
+        [PublicAPI]
         [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly unsafe Pitch__* _pitch;
+        internal readonly unsafe Pitch__* Handle;
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private PitchUnit _unit = PitchUnit.Default;
@@ -24,7 +23,7 @@ namespace Aubio.NET.Detection
 
         #region Implementation of ISampler
 
-        public int SampleRate => _sampleRate;
+        public int SampleRate { get; }
 
         #endregion
 
@@ -45,45 +44,45 @@ namespace Aubio.NET.Detection
             if (sampleRate <= 0)
                 throw new ArgumentOutOfRangeException(nameof(sampleRate));
 
-            _sampleRate = sampleRate;
+            SampleRate = sampleRate;
 
             var attribute = detection.GetDescriptionAttribute();
             var method = attribute.Description;
 
-            var pitch = new_aubio_pitch(method, bufferSize.ToUInt32(), hopSize.ToUInt32(), sampleRate.ToUInt32());
-            if (pitch == null)
-                throw new ArgumentNullException(nameof(pitch));
+            var handle = new_aubio_pitch(method, (uint) bufferSize, (uint) hopSize, (uint) sampleRate);
+            if (handle == null)
+                throw new ArgumentNullException(nameof(handle));
 
-            _pitch = pitch;
+            Handle = handle;
         }
 
         [PublicAPI]
-        public float Confidence => aubio_pitch_get_confidence(this);
+        public unsafe float Confidence => aubio_pitch_get_confidence(Handle);
 
         [PublicAPI]
-        public float Silence
+        public unsafe float Silence
         {
-            get => aubio_pitch_get_silence(this);
+            get => aubio_pitch_get_silence(Handle);
             set
             {
-                if (aubio_pitch_set_silence(this, value))
+                if (aubio_pitch_set_silence(Handle, value))
                     throw new ArgumentOutOfRangeException(nameof(value));
             }
         }
 
         [PublicAPI]
-        public float Tolerance
+        public unsafe float Tolerance
         {
-            get => aubio_pitch_get_tolerance(this);
+            get => aubio_pitch_get_tolerance(Handle);
             set
             {
-                if (aubio_pitch_set_tolerance(this, value))
+                if (aubio_pitch_set_tolerance(Handle, value))
                     throw new ArgumentOutOfRangeException(nameof(value));
             }
         }
 
         [PublicAPI]
-        public PitchUnit Unit
+        public unsafe PitchUnit Unit
         {
             get => _unit;
             set
@@ -91,7 +90,7 @@ namespace Aubio.NET.Detection
                 var attribute = value.GetDescriptionAttribute();
                 var description = attribute.Description;
 
-                if (aubio_pitch_set_unit(this, description))
+                if (aubio_pitch_set_unit(Handle, description))
                     throw new ArgumentOutOfRangeException(nameof(value));
 
                 _unit = value;
@@ -99,7 +98,7 @@ namespace Aubio.NET.Detection
         }
 
         [PublicAPI]
-        public void Do([NotNull] FVec input, [NotNull] FVec output)
+        public unsafe void Do([NotNull] FVec input, [NotNull] FVec output)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
@@ -107,21 +106,21 @@ namespace Aubio.NET.Detection
             if (output == null)
                 throw new ArgumentNullException(nameof(output));
 
-            aubio_pitch_do(this, input, output);
+            aubio_pitch_do(Handle, input.Handle, output.Handle);
         }
 
         #endregion
 
         #region Overrides of AubioObject
 
-        protected override void DisposeNative()
+        protected override unsafe void DisposeNative()
         {
-            del_aubio_pitch(this);
+            del_aubio_pitch(Handle);
         }
 
         internal override unsafe IntPtr ToPointer()
         {
-            return new IntPtr(_pitch);
+            return new IntPtr(Handle);
         }
 
         #endregion
@@ -139,57 +138,57 @@ namespace Aubio.NET.Detection
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void del_aubio_pitch(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Pitch pitch
+        private static extern unsafe void del_aubio_pitch(
+            Pitch__* pitch
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_pitch_do(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Pitch pitch,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec input,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec output
+        private static extern unsafe void aubio_pitch_do(
+            Pitch__* pitch,
+            FVec__* input,
+            FVec__* output
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern float aubio_pitch_get_confidence(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Pitch pitch
+        private static extern unsafe float aubio_pitch_get_confidence(
+            Pitch__* pitch
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern float aubio_pitch_get_silence(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Pitch pitch
+        private static extern unsafe float aubio_pitch_get_silence(
+            Pitch__* pitch
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern float aubio_pitch_get_tolerance(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Pitch pitch
+        private static extern unsafe float aubio_pitch_get_tolerance(
+            Pitch__* pitch
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_pitch_set_silence(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Pitch pitch,
+        private static extern unsafe bool aubio_pitch_set_silence(
+            Pitch__* pitch,
             float silence
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_pitch_set_tolerance(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Pitch pitch,
+        private static extern unsafe bool aubio_pitch_set_tolerance(
+            Pitch__* pitch,
             float tolerance
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_pitch_set_unit(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Pitch pitch,
+        private static extern unsafe bool aubio_pitch_set_unit(
+            Pitch__* pitch,
             [MarshalAs(UnmanagedType.LPStr)] string pitchUnit
         );
 
