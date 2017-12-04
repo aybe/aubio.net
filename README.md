@@ -17,4 +17,12 @@ This branch has the latest changes:
  - compatibility with UWP restored
  - a few samples
 
+## Notes
+
+### UWP
+
+Since Aubio.NET is a .NET Standard 2.0 library, your application must target FCU, see https://blogs.msdn.microsoft.com/dotnet/2017/08/25/uwp-net-standard-2-0-preview/.
+
+---
+
 Binaries will be available soon !
