@@ -16,9 +16,10 @@ namespace Aubio.NET.Temporal
 
         #region Fields
 
+        [PublicAPI]
         [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly unsafe Resampler__* _resampler;
+        internal readonly unsafe Resampler__* Handle;
 
         #endregion
 
@@ -31,18 +32,18 @@ namespace Aubio.NET.Temporal
 
             Ratio = ratio;
 
-            var resampler = new_aubio_resampler(ratio, type);
-            if (resampler == null)
-                throw new ArgumentNullException(nameof(resampler));
+            var handle = new_aubio_resampler(ratio, type);
+            if (handle == null)
+                throw new ArgumentNullException(nameof(handle));
 
-            _resampler = resampler;
+            Handle = handle;
         }
 
         [PublicAPI]
         public float Ratio { get; }
 
         [PublicAPI]
-        public void Do([NotNull] FVec input, [NotNull] FVec output)
+        public unsafe void Do([NotNull] FVec input, [NotNull] FVec output)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
@@ -53,21 +54,21 @@ namespace Aubio.NET.Temporal
             if (output.Length < (int) Math.Ceiling(input.Length / Ratio))
                 throw new ArgumentOutOfRangeException(nameof(output));
 
-            aubio_resampler_do(this, input, output);
+            aubio_resampler_do(Handle, input.Handle, output.Handle);
         }
 
         #endregion
 
         #region Overrides of AubioObject
 
-        protected override void DisposeNative()
+        protected override unsafe void DisposeNative()
         {
-            del_aubio_resampler(this);
+            del_aubio_resampler(Handle);
         }
 
         internal override unsafe IntPtr ToPointer()
         {
-            return new IntPtr(_resampler);
+            return new IntPtr(Handle);
         }
 
         #endregion
@@ -83,18 +84,16 @@ namespace Aubio.NET.Temporal
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void del_aubio_resampler(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            Resampler resampler
+        private static extern unsafe void del_aubio_resampler(
+            Resampler__* resampler
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_resampler_do(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            Resampler resampler,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec input,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec output
+        private static extern unsafe void aubio_resampler_do(
+            Resampler__* resampler,
+            FVec__* input,
+            FVec__* output
         );
 
         #endregion

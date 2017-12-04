@@ -13,22 +13,23 @@ namespace Aubio.NET.Temporal
     {
         #region Fields
 
+        [PublicAPI]
         [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly unsafe Filter__* _filter;
+        internal readonly unsafe Filter__* Handle;
 
         #endregion
 
         #region Implementation of ISampler
 
-        public int SampleRate
+        public unsafe int SampleRate
         {
-            get => aubio_filter_get_samplerate(this).ToInt32();
+            get => (int) aubio_filter_get_samplerate(Handle);
 
             [PublicAPI]
             set
             {
-                if (aubio_filter_set_samplerate(this, value.ToUInt32()))
+                if (aubio_filter_set_samplerate(Handle, (uint) value))
                     throw new ArgumentOutOfRangeException(nameof(value));
             }
         }
@@ -38,27 +39,27 @@ namespace Aubio.NET.Temporal
         #region Public Members
 
         [PublicAPI]
-        public int Order => aubio_filter_get_order(this).ToInt32();
+        public unsafe int Order => (int) aubio_filter_get_order(Handle);
 
-        private unsafe Filter([NotNull] Filter__* filter)
+        private unsafe Filter([NotNull] Filter__* handle)
         {
-            if (filter == null)
-                throw new ArgumentNullException(nameof(filter));
+            if (handle == null)
+                throw new ArgumentNullException(nameof(handle));
 
-            _filter = filter;
+            Handle = handle;
         }
 
         [PublicAPI]
-        public void Do([NotNull] FVec input)
+        public unsafe void Do([NotNull] FVec input)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
-            aubio_filter_do(this, input);
+            aubio_filter_do(Handle, input.Handle);
         }
 
         [PublicAPI]
-        public void DoFiltFilt([NotNull] FVec input, [NotNull] FVec temp)
+        public unsafe void DoFiltFilt([NotNull] FVec input, [NotNull] FVec temp)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
@@ -66,11 +67,11 @@ namespace Aubio.NET.Temporal
             if (temp == null)
                 throw new ArgumentNullException(nameof(temp));
 
-            aubio_filter_do_filtfilt(this, input, temp);
+            aubio_filter_do_filtfilt(Handle, input.Handle, temp.Handle);
         }
 
         [PublicAPI]
-        public void DoOutplace([NotNull] FVec input, [NotNull] FVec output)
+        public unsafe void DoOutplace([NotNull] FVec input, [NotNull] FVec output)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
@@ -78,25 +79,25 @@ namespace Aubio.NET.Temporal
             if (output == null)
                 throw new ArgumentNullException(nameof(output));
 
-            aubio_filter_do_outplace(this, input, output);
+            aubio_filter_do_outplace(Handle, input.Handle, output.Handle);
         }
 
         [PublicAPI]
-        public void DoReset()
+        public unsafe void DoReset()
         {
-            aubio_filter_do_reset(this);
+            aubio_filter_do_reset(Handle);
         }
 
         [PublicAPI]
         public unsafe LVec GetFeedback()
         {
-            return new LVec(aubio_filter_get_feedback(this), false);
+            return new LVec(aubio_filter_get_feedback(Handle), false);
         }
 
         [PublicAPI]
         public unsafe LVec GetFeedforward()
         {
-            return new LVec(aubio_filter_get_feedforward(this), false);
+            return new LVec(aubio_filter_get_feedforward(Handle), false);
         }
 
         [PublicAPI]
@@ -105,7 +106,7 @@ namespace Aubio.NET.Temporal
             if (order <= 0)
                 throw new ArgumentOutOfRangeException(nameof(order));
 
-            var filter = new Filter(new_aubio_filter(order.ToUInt32()));
+            var filter = new Filter(new_aubio_filter((uint) order));
 
             return filter;
         }
@@ -116,7 +117,7 @@ namespace Aubio.NET.Temporal
             if (sampleRate <= 0)
                 throw new ArgumentOutOfRangeException(nameof(sampleRate));
 
-            var filter = new Filter(new_aubio_filter_a_weighting(sampleRate.ToUInt32()));
+            var filter = new Filter(new_aubio_filter_a_weighting((uint) sampleRate));
 
             return filter;
         }
@@ -127,7 +128,7 @@ namespace Aubio.NET.Temporal
             if (sampleRate <= 0)
                 throw new ArgumentOutOfRangeException(nameof(sampleRate));
 
-            var filter = new Filter(new_aubio_filter_c_weighting(sampleRate.ToUInt32()));
+            var filter = new Filter(new_aubio_filter_c_weighting((uint) sampleRate));
 
             return filter;
         }
@@ -144,14 +145,14 @@ namespace Aubio.NET.Temporal
 
         #region Overrides of AubioObject
 
-        protected override void DisposeNative()
+        protected override unsafe void DisposeNative()
         {
-            del_aubio_filter(this);
+            del_aubio_filter(Handle);
         }
 
         internal override unsafe IntPtr ToPointer()
         {
-            return new IntPtr(_filter);
+            return new IntPtr(Handle);
         }
 
         #endregion
@@ -183,59 +184,59 @@ namespace Aubio.NET.Temporal
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void del_aubio_filter(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Filter filter
+        private static extern unsafe void del_aubio_filter(
+            Filter__* filter
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_filter_do(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Filter filter,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec input
+        private static extern unsafe void aubio_filter_do(
+            Filter__* filter,
+            FVec__* input
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_filter_do_outplace(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Filter filter,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec input,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec output
+        private static extern unsafe void aubio_filter_do_outplace(
+            Filter__* filter,
+            FVec__* input,
+            FVec__* output
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_filter_do_filtfilt(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Filter filter,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec input,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec temp
+        private static extern unsafe void aubio_filter_do_filtfilt(
+            Filter__* filter,
+            FVec__* input,
+            FVec__* temp
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_filter_do_reset(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Filter filter
+        private static extern unsafe void aubio_filter_do_reset(
+            Filter__* filter
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern unsafe LVec__* aubio_filter_get_feedback(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Filter filter
+            Filter__* filter
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern unsafe LVec__* aubio_filter_get_feedforward(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Filter filter
+            Filter__* filter
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern uint aubio_filter_get_order(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Filter filter
+        private static extern unsafe uint aubio_filter_get_order(
+            Filter__* filter
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern uint aubio_filter_get_samplerate(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Filter filter
+        private static extern unsafe uint aubio_filter_get_samplerate(
+            Filter__* filter
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_filter_set_samplerate(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Filter filter,
+        private static extern unsafe bool aubio_filter_set_samplerate(
+            Filter__* filter,
             uint sampleRate
         );
 

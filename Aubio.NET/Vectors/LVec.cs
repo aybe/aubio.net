@@ -72,7 +72,7 @@ namespace Aubio.NET.Vectors
 
         #region Public Members
 
-        internal unsafe LVec([NotNull] LVec__* handle, bool isDisposable = true)
+        internal unsafe LVec([NotNull] LVec__* handle, bool isDisposable)
             : base(isDisposable)
         {
             if (handle == null)

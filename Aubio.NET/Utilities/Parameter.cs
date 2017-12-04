@@ -12,9 +12,10 @@ namespace Aubio.NET.Utilities
     {
         #region Fields 
 
+        [PublicAPI]
         [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly unsafe Parameter__* _parameter;
+        internal readonly unsafe Parameter__* Handle;
 
         #endregion
 
@@ -25,81 +26,81 @@ namespace Aubio.NET.Utilities
             if (steps <= 0)
                 throw new ArgumentOutOfRangeException(nameof(steps));
 
-            var parameter = new_aubio_parameter(minValue, maxValue, steps.ToUInt32());
-            if (parameter == null)
-                throw new ArgumentNullException(nameof(parameter));
+            var handle = new_aubio_parameter(minValue, maxValue, (uint) steps);
+            if (handle == null)
+                throw new ArgumentNullException(nameof(handle));
 
-            _parameter = parameter;
+            Handle = handle;
         }
 
         [PublicAPI]
-        public float Current
+        public unsafe float Current
         {
-            get => aubio_parameter_get_current_value(this);
+            get => aubio_parameter_get_current_value(Handle);
             set
             {
-                if (aubio_parameter_set_current_value(this, value))
+                if (aubio_parameter_set_current_value(Handle, value))
                     throw new ArgumentOutOfRangeException(nameof(value));
             }
         }
 
         [PublicAPI]
-        public float Min
+        public unsafe float Min
         {
-            get => aubio_parameter_get_min_value(this);
+            get => aubio_parameter_get_min_value(Handle);
             set
             {
-                if (aubio_parameter_set_min_value(this, value))
+                if (aubio_parameter_set_min_value(Handle, value))
                     throw new ArgumentOutOfRangeException(nameof(value));
             }
         }
 
         [PublicAPI]
-        public float Max
+        public unsafe float Max
         {
-            get => aubio_parameter_get_max_value(this);
+            get => aubio_parameter_get_max_value(Handle);
             set
             {
-                if (aubio_parameter_set_max_value(this, value))
+                if (aubio_parameter_set_max_value(Handle, value))
                     throw new ArgumentOutOfRangeException(nameof(value));
             }
         }
 
         [PublicAPI]
-        public int Steps
+        public unsafe int Steps
         {
-            get => aubio_parameter_get_steps(this).ToInt32();
+            get => (int) aubio_parameter_get_steps(Handle);
             set
             {
-                if (aubio_parameter_set_steps(this, value.ToUInt32()))
+                if (aubio_parameter_set_steps(Handle, (uint) value))
                     throw new ArgumentOutOfRangeException(nameof(value));
             }
         }
 
         [PublicAPI]
-        public float GetNextValue()
+        public unsafe float GetNextValue()
         {
-            return aubio_parameter_get_next_value(this);
+            return aubio_parameter_get_next_value(Handle);
         }
 
         [PublicAPI]
-        public bool SetTargetValue(float target)
+        public unsafe bool SetTargetValue(float target)
         {
-            return !aubio_parameter_set_target_value(this, target);
+            return !aubio_parameter_set_target_value(Handle, target);
         }
 
         #endregion
 
         #region Overrides of AubioObject
 
-        protected override void DisposeNative()
+        protected override unsafe void DisposeNative()
         {
-            del_aubio_parameter(this);
+            del_aubio_parameter(Handle);
         }
 
         internal override unsafe IntPtr ToPointer()
         {
-            return new IntPtr(_parameter);
+            return new IntPtr(Handle);
         }
 
         #endregion
@@ -114,79 +115,68 @@ namespace Aubio.NET.Utilities
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void del_aubio_parameter(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            Parameter parameter
+        private static extern unsafe void del_aubio_parameter(
+            Parameter__* parameter
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_parameter_set_target_value(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            Parameter parameter,
+        private static extern unsafe bool aubio_parameter_set_target_value(
+            Parameter__* parameter,
             float value
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern float aubio_parameter_get_next_value(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            Parameter parameter
+        private static extern unsafe float aubio_parameter_get_next_value(
+            Parameter__* parameter
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern float aubio_parameter_get_current_value(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            Parameter parameter
+        private static extern unsafe float aubio_parameter_get_current_value(
+            Parameter__* parameter
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_parameter_set_current_value(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            Parameter parameter,
+        private static extern unsafe bool aubio_parameter_set_current_value(
+            Parameter__* parameter,
             float value
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_parameter_set_max_value(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            Parameter parameter,
+        private static extern unsafe bool aubio_parameter_set_max_value(
+            Parameter__* parameter,
             float value
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_parameter_set_min_value(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            Parameter parameter,
+        private static extern unsafe bool aubio_parameter_set_min_value(
+            Parameter__* parameter,
             float value
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_parameter_set_steps(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            Parameter parameter,
+        private static extern unsafe bool aubio_parameter_set_steps(
+            Parameter__* parameter,
             uint steps
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern float aubio_parameter_get_max_value(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            Parameter parameter
+        private static extern unsafe float aubio_parameter_get_max_value(
+            Parameter__* parameter
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern float aubio_parameter_get_min_value(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            Parameter parameter
+        private static extern unsafe float aubio_parameter_get_min_value(
+            Parameter__* parameter
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern uint aubio_parameter_get_steps(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            Parameter parameter
+        private static extern unsafe uint aubio_parameter_get_steps(
+            Parameter__* parameter
         );
 
         #endregion
