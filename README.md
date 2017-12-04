@@ -8,6 +8,13 @@ It still needs some polishing so expect some minor adjustments to the API (read 
 
 Your feedback is welcome !
 
-## Examples
-https://github.com/aybe/aubio.net/blob/master/Aubio.TestApp.Desktop/Program.cs
-https://github.com/aybe/aubio.net/blob/master/Aubio.TestApp.Universal/MainPage.xaml.cs
+## 'develop' branch
+
+This branch has the latest changes:
+
+ - better interface
+ - AnyCPU support
+ - compatibility with UWP restored
+ - a few samples
+
+Binaries will be available soon !
