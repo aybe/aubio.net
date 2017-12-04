@@ -15,9 +15,10 @@ namespace Aubio.NET.Spectral
     {
         #region Fields
 
+        [PublicAPI]
         [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly unsafe Filterbank__* _filterbank;
+        internal readonly unsafe Filterbank__* Handle;
 
         #endregion
 
@@ -32,11 +33,11 @@ namespace Aubio.NET.Spectral
             if (windowSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(windowSize));
 
-            var filterbank = new_aubio_filterbank(filters.ToUInt32(), windowSize.ToUInt32());
-            if (filterbank == null)
-                throw new ArgumentNullException(nameof(filterbank));
+            var handle = new_aubio_filterbank((uint) filters, (uint) windowSize);
+            if (handle == null)
+                throw new ArgumentNullException(nameof(handle));
 
-            _filterbank = filterbank;
+            Handle = handle;
         }
 
         [PublicAPI]
@@ -44,7 +45,7 @@ namespace Aubio.NET.Spectral
         {
             get
             {
-                var coeffs = aubio_filterbank_get_coeffs(this);
+                var coeffs = aubio_filterbank_get_coeffs(Handle);
                 var fMat = new FMat(coeffs, false);
                 return fMat;
             }
@@ -53,13 +54,13 @@ namespace Aubio.NET.Spectral
                 if (value == null)
                     throw new ArgumentNullException(nameof(value));
 
-                if (aubio_filterbank_set_coeffs(this, value))
+                if (aubio_filterbank_set_coeffs(Handle, value.Handle))
                     throw new InvalidOperationException();
             }
         }
 
         [PublicAPI]
-        public void Do([NotNull] CVec input, [NotNull] FVec output)
+        public unsafe void Do([NotNull] CVec input, [NotNull] FVec output)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
@@ -67,23 +68,23 @@ namespace Aubio.NET.Spectral
             if (output == null)
                 throw new ArgumentNullException(nameof(output));
 
-            aubio_filterbank_do(this, input, output);
+            aubio_filterbank_do(Handle, input.Handle, output.Handle);
         }
 
         [PublicAPI]
-        public void SetTriangleBands([NotNull] FVec frequencies, float sampleRate)
+        public unsafe void SetTriangleBands([NotNull] FVec frequencies, float sampleRate)
         {
             if (frequencies == null)
                 throw new ArgumentNullException(nameof(frequencies));
 
-            if (aubio_filterbank_set_triangle_bands(this, frequencies, sampleRate))
+            if (aubio_filterbank_set_triangle_bands(Handle, frequencies.Handle, sampleRate))
                 throw new InvalidOperationException();
         }
 
         [PublicAPI]
-        public void SetMelCoeffsSlaney(float sampleRate)
+        public unsafe void SetMelCoeffsSlaney(float sampleRate)
         {
-            if (aubio_filterbank_set_mel_coeffs_slaney(this, sampleRate))
+            if (aubio_filterbank_set_mel_coeffs_slaney(Handle, sampleRate))
                 throw new InvalidOperationException();
         }
 
@@ -91,14 +92,14 @@ namespace Aubio.NET.Spectral
 
         #region Overrides of AubioObject
 
-        protected override void DisposeNative()
+        protected override unsafe void DisposeNative()
         {
-            del_aubio_filterbank(this);
+            del_aubio_filterbank(Handle);
         }
 
         internal override unsafe IntPtr ToPointer()
         {
-            return new IntPtr(_filterbank);
+            return new IntPtr(Handle);
         }
 
         #endregion
@@ -114,52 +115,46 @@ namespace Aubio.NET.Spectral
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void del_aubio_filterbank(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            Filterbank filterbank
+        private static extern unsafe void del_aubio_filterbank(
+            Filterbank__* filterbank
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_filterbank_do(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            Filterbank filterbank,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec input,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec output
+        private static extern unsafe void aubio_filterbank_do(
+            Filterbank__* filterbank,
+            CVec__* input,
+            FVec__* output
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern unsafe FMat__* aubio_filterbank_get_coeffs(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            Filterbank filterbank
+            Filterbank__* filterbank
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_filterbank_set_coeffs(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            Filterbank filterbank,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FMat filters
+        private static extern unsafe bool aubio_filterbank_set_coeffs(
+            Filterbank__* filterbank,
+            FMat__* filters
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_filterbank_set_triangle_bands(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            Filterbank filterbank,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec freqs,
+        private static extern unsafe bool aubio_filterbank_set_triangle_bands(
+            Filterbank__* filterbank,
+            FVec__* freqs,
             float sampleRate
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_filterbank_set_mel_coeffs_slaney(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            Filterbank filterbank,
+        private static extern unsafe bool aubio_filterbank_set_mel_coeffs_slaney(
+            Filterbank__* filterbank,
             float sampleRate
         );
 
