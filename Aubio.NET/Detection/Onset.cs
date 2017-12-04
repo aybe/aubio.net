@@ -14,9 +14,10 @@ namespace Aubio.NET.Detection
     {
         #region Fields
 
+        [PublicAPI]
         [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly unsafe Onset__* _onset;
+        internal readonly unsafe Onset__* Handle;
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly int _sampleRate;
@@ -48,112 +49,112 @@ namespace Aubio.NET.Detection
             var attribute = detection.GetDescriptionAttribute();
             var method = attribute.Description;
 
-            var onset = new_aubio_onset(method, bufferSize.ToUInt32(), hopSize.ToUInt32(), sampleRate.ToUInt32());
-            if (onset == null)
-                throw new ArgumentNullException(nameof(onset));
+            var handle = new_aubio_onset(method, (uint) bufferSize, (uint) hopSize, (uint) sampleRate);
+            if (handle == null)
+                throw new ArgumentNullException(nameof(handle));
 
-            _onset = onset;
+            Handle = handle;
         }
 
         [PublicAPI]
-        public bool AdaptiveWhitening
+        public unsafe bool AdaptiveWhitening
         {
-            get => aubio_onset_get_awhitening(this);
+            get => aubio_onset_get_awhitening(Handle);
             set
             {
-                if (aubio_onset_set_awhitening(this, value))
+                if (aubio_onset_set_awhitening(Handle, value))
                     throw new InvalidOperationException();
             }
         }
 
         [PublicAPI]
-        public float Compression
+        public unsafe float Compression
         {
-            get => aubio_onset_get_compression(this);
+            get => aubio_onset_get_compression(Handle);
             set
             {
-                if (aubio_onset_set_compression(this, value))
+                if (aubio_onset_set_compression(Handle, value))
                     throw new ArgumentOutOfRangeException(nameof(value));
             }
         }
 
         [PublicAPI]
-        public Time Delay
+        public unsafe Time Delay
         {
             get
             {
-                var samples = aubio_onset_get_delay(this);
-                var time = Time.FromSamples(_sampleRate, samples.ToInt32());
+                var samples = aubio_onset_get_delay(Handle);
+                var time = Time.FromSamples(_sampleRate, (int) samples);
+                return time;
+            }
+            set
+            {
+                var samples = value.Samples;
+
+                if (aubio_onset_set_delay(Handle, (uint) samples))
+                    throw new ArgumentOutOfRangeException(nameof(value));
+            }
+        }
+
+        [PublicAPI]
+        public unsafe float Descriptor => aubio_onset_get_descriptor(Handle);
+
+        [PublicAPI]
+        public unsafe Time Last
+        {
+            get
+            {
+                var samples = aubio_onset_get_last(Handle);
+                var time = Time.FromSamples(_sampleRate, (int) samples);
+                return time;
+            }
+        }
+
+        [PublicAPI]
+        public unsafe Time MinimumInterOnsetInterval
+        {
+            get
+            {
+                var samples = aubio_onset_get_minioi(Handle);
+                var time = Time.FromSamples(_sampleRate, (int) samples);
                 return time;
             }
             set
             {
                 var samples = value.Samples.ToUInt32();
 
-                if (aubio_onset_set_delay(this, samples))
+                if (aubio_onset_set_minioi(Handle, samples))
                     throw new ArgumentOutOfRangeException(nameof(value));
             }
         }
 
         [PublicAPI]
-        public float Descriptor => aubio_onset_get_descriptor(this);
-
-        [PublicAPI]
-        public Time Last
+        public unsafe float Silence
         {
-            get
-            {
-                var samples = aubio_onset_get_last(this);
-                var time = Time.FromSamples(_sampleRate, samples.ToInt32());
-                return time;
-            }
-        }
-
-        [PublicAPI]
-        public Time MinimumInterOnsetInterval
-        {
-            get
-            {
-                var samples = aubio_onset_get_minioi(this);
-                var time = Time.FromSamples(_sampleRate, samples.ToInt32());
-                return time;
-            }
+            get => aubio_onset_get_silence(Handle);
             set
             {
-                var samples = value.Samples.ToUInt32();
-
-                if (aubio_onset_set_minioi(this, samples))
+                if (aubio_onset_set_silence(Handle, value))
                     throw new ArgumentOutOfRangeException(nameof(value));
             }
         }
 
         [PublicAPI]
-        public float Silence
+        public unsafe float Threshold
         {
-            get => aubio_onset_get_silence(this);
+            get => aubio_onset_get_threshold(Handle);
             set
             {
-                if (aubio_onset_set_silence(this, value))
+                if (aubio_onset_set_threshold(Handle, value))
                     throw new ArgumentOutOfRangeException(nameof(value));
             }
         }
 
         [PublicAPI]
-        public float Threshold
-        {
-            get => aubio_onset_get_threshold(this);
-            set
-            {
-                if (aubio_onset_set_threshold(this, value))
-                    throw new ArgumentOutOfRangeException(nameof(value));
-            }
-        }
+        public unsafe float ThresholdedDescriptor => aubio_onset_get_thresholded_descriptor(Handle);
 
         [PublicAPI]
-        public float ThresholdedDescriptor => aubio_onset_get_thresholded_descriptor(this);
-
-        [PublicAPI]
-        public void Do([NotNull] FVec input, [NotNull] FVec output)
+        public unsafe void Do([NotNull] FVec input, [NotNull] FVec output)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
@@ -161,22 +162,22 @@ namespace Aubio.NET.Detection
             if (output == null)
                 throw new ArgumentNullException(nameof(output));
 
-            aubio_onset_do(this, input, output);
+            aubio_onset_do(Handle, input.Handle, output.Handle);
         }
 
         [PublicAPI]
-        public void Reset()
+        public unsafe void Reset()
         {
-            aubio_onset_reset(this);
+            aubio_onset_reset(Handle);
         }
 
         [PublicAPI]
-        public void SetDefaultParameters(OnsetDetection detection)
+        public unsafe void SetDefaultParameters(OnsetDetection detection)
         {
             var attribute = detection.GetDescriptionAttribute();
             var description = attribute.Description;
 
-            if (aubio_onset_set_default_parameters(this, description))
+            if (aubio_onset_set_default_parameters(Handle, description))
                 throw new ArgumentOutOfRangeException(nameof(detection));
         }
 
@@ -184,14 +185,14 @@ namespace Aubio.NET.Detection
 
         #region Overrides of AubioObject
 
-        protected override void DisposeNative()
+        protected override unsafe void DisposeNative()
         {
-            del_aubio_onset(this);
+            del_aubio_onset(Handle);
         }
 
         internal override unsafe IntPtr ToPointer()
         {
-            return new IntPtr(_onset);
+            return new IntPtr(Handle);
         }
 
         #endregion
@@ -209,133 +210,133 @@ namespace Aubio.NET.Detection
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void del_aubio_onset(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Onset onset
+        private static extern unsafe void del_aubio_onset(
+            Onset__* onset
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_onset_do(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Onset onset,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec input,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec output
-        );
-
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_onset_get_awhitening(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Onset onset
-        );
-
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern float aubio_onset_get_compression(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Onset onset
-        );
-
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern float aubio_onset_get_descriptor(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Onset onset
-        );
-
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern uint aubio_onset_get_delay(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Onset onset
-        );
-
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern uint aubio_onset_get_last(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Onset onset
-        );
-
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern uint aubio_onset_get_minioi(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Onset onset
-        );
-
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern float aubio_onset_get_silence(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Onset onset
-        );
-
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern float aubio_onset_get_threshold(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Onset onset
-        );
-
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern float aubio_onset_get_thresholded_descriptor(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Onset onset
+        private static extern unsafe void aubio_onset_do(
+            Onset__* onset,
+            FVec__* input,
+            FVec__* output
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_onset_set_awhitening(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Onset onset,
+        private static extern unsafe bool aubio_onset_get_awhitening(
+            Onset__* onset
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe float aubio_onset_get_compression(
+            Onset__* onset
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe float aubio_onset_get_descriptor(
+            Onset__* onset
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe uint aubio_onset_get_delay(
+            Onset__* onset
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe uint aubio_onset_get_last(
+            Onset__* onset
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe uint aubio_onset_get_minioi(
+            Onset__* onset
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe float aubio_onset_get_silence(
+            Onset__* onset
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe float aubio_onset_get_threshold(
+            Onset__* onset
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe float aubio_onset_get_thresholded_descriptor(
+            Onset__* onset
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern unsafe bool aubio_onset_set_awhitening(
+            Onset__* onset,
             [MarshalAs(UnmanagedType.Bool)] bool enable
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_onset_set_compression(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Onset onset,
+        private static extern unsafe bool aubio_onset_set_compression(
+            Onset__* onset,
             float lambda
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_onset_set_default_parameters(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Onset onset,
+        private static extern unsafe bool aubio_onset_set_default_parameters(
+            Onset__* onset,
             [MarshalAs(UnmanagedType.LPStr)] string onsetMode
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_onset_set_delay(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Onset onset,
+        private static extern unsafe bool aubio_onset_set_delay(
+            Onset__* onset,
             uint delay
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_onset_set_minioi(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Onset onset,
+        private static extern unsafe bool aubio_onset_set_minioi(
+            Onset__* onset,
             uint minioi
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_onset_set_silence(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Onset onset,
+        private static extern unsafe bool aubio_onset_set_silence(
+            Onset__* onset,
             float silence
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_onset_set_threshold(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Onset onset,
+        private static extern unsafe bool aubio_onset_set_threshold(
+            Onset__* onset,
             float threshold
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_onset_reset(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Onset onset
+        private static extern unsafe void aubio_onset_reset(
+            Onset__* onset
         );
 
         #endregion
