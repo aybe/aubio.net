@@ -17,31 +17,31 @@ namespace Aubio.NET.Vectors
 
         [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly unsafe LVec__* _lVec;
+        internal readonly unsafe LVec__* Handle;
 
         #endregion
 
         #region Implementation of IVector<double>
 
-        public double this[int index]
+        public unsafe double this[int index]
         {
             get
             {
                 if (index < 0 || index >= Length)
                     throw new IndexOutOfRangeException();
 
-                return lvec_get_sample(this, index.ToUInt32());
+                return lvec_get_sample(Handle, (uint) index);
             }
             set
             {
                 if (index < 0 || index >= Length)
                     throw new IndexOutOfRangeException();
 
-                lvec_set_sample(this, value, index.ToUInt32());
+                lvec_set_sample(Handle, value, (uint) index);
             }
         }
 
-        public unsafe int Length => _lVec->Length.ToInt32();
+        public unsafe int Length => (int) Handle->Length;
 
         public IEnumerator<double> GetEnumerator()
         {
@@ -53,32 +53,32 @@ namespace Aubio.NET.Vectors
             return GetEnumerator();
         }
 
-        public void SetAll(double value)
+        public unsafe void SetAll(double value)
         {
-            lvec_set_all(this, (float) value);
+            lvec_set_all(Handle, (float) value);
         }
 
-        public void Ones()
+        public unsafe void Ones()
         {
-            lvec_ones(this);
+            lvec_ones(Handle);
         }
 
-        public void Zeros()
+        public unsafe void Zeros()
         {
-            lvec_zeros(this);
+            lvec_zeros(Handle);
         }
 
         #endregion
 
         #region Public Members
 
-        internal unsafe LVec([NotNull] LVec__* lVec, bool isDisposable = true)
+        internal unsafe LVec([NotNull] LVec__* handle, bool isDisposable = true)
             : base(isDisposable)
         {
-            if (lVec == null)
-                throw new ArgumentNullException(nameof(lVec));
+            if (handle == null)
+                throw new ArgumentNullException(nameof(handle));
 
-            _lVec = lVec;
+            Handle = handle;
         }
 
         [PublicAPI]
@@ -87,31 +87,31 @@ namespace Aubio.NET.Vectors
             if (length <= 0)
                 throw new ArgumentOutOfRangeException(nameof(length));
 
-            var lVec = new_lvec(length.ToUInt32());
-            if (lVec == null)
-                throw new ArgumentNullException(nameof(lVec));
+            var handle = new_lvec((uint) length);
+            if (handle == null)
+                throw new ArgumentNullException(nameof(handle));
 
-            _lVec = new_lvec(length.ToUInt32());
+            Handle = handle;
         }
 
         [PublicAPI]
         public unsafe double* GetData()
         {
-            return lvec_get_data(this);
+            return lvec_get_data(Handle);
         }
 
         #endregion
 
         #region Overrides of AubioObject
 
-        protected override void DisposeNative()
+        protected override unsafe void DisposeNative()
         {
-            del_lvec(this);
+            del_lvec(Handle);
         }
 
         internal override unsafe IntPtr ToPointer()
         {
-            return new IntPtr(_lVec);
+            return new IntPtr(Handle);
         }
 
         #endregion
@@ -126,54 +126,54 @@ namespace Aubio.NET.Vectors
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void del_lvec(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] LVec lVec
+        private static extern unsafe void del_lvec(
+            LVec__* lVec
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern double lvec_get_sample(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] LVec lVec,
+        private static extern unsafe double* lvec_get_data(
+            LVec__* lVec
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe double lvec_get_sample(
+            LVec__* lVec,
             uint position
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void lvec_set_sample(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] LVec lVec,
+        private static extern unsafe void lvec_set_sample(
+            LVec__* lVec,
             double value,
             uint position
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern unsafe double* lvec_get_data(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] LVec lVec
+        private static extern unsafe void lvec_ones(
+            LVec__* lVec
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void lvec_print(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] LVec lVec
+        private static extern unsafe void lvec_print(
+            LVec__* lVec
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void lvec_set_all(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] LVec lVec,
+        private static extern unsafe void lvec_set_all(
+            LVec__* lVec,
             float value
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void lvec_zeros(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] LVec lVec
-        );
-
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void lvec_ones(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] LVec lVec
+        private static extern unsafe void lvec_zeros(
+            LVec__* lVec
         );
 
         #endregion

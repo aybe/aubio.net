@@ -15,21 +15,22 @@ namespace Aubio.NET.Vectors
     {
         #region Fields
 
+        [PublicAPI]
         [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly unsafe FMat__* _fMat;
+        internal readonly unsafe FMat__* Handle;
 
         #endregion
 
         #region Public Members
 
-        internal unsafe FMat([NotNull] FMat__* fMat, bool isDisposable)
+        internal unsafe FMat([NotNull] FMat__* handle, bool isDisposable)
             : base(isDisposable)
         {
-            if (fMat == null)
-                throw new ArgumentNullException(nameof(fMat));
+            if (handle == null)
+                throw new ArgumentNullException(nameof(handle));
 
-            _fMat = fMat;
+            Handle = handle;
         }
 
         public unsafe FMat(int rows, int columns)
@@ -40,21 +41,21 @@ namespace Aubio.NET.Vectors
             if (columns <= 0)
                 throw new ArgumentOutOfRangeException(nameof(columns));
 
-            var fMat = new_fmat(rows.ToUInt32(), columns.ToUInt32());
-            if (fMat == null)
-                throw new ArgumentNullException(nameof(fMat));
+            var handle = new_fmat((uint) rows, (uint) columns);
+            if (handle == null)
+                throw new ArgumentNullException(nameof(handle));
 
-            _fMat = fMat;
+            Handle = handle;
         }
 
         [PublicAPI]
-        public unsafe int Rows => _fMat->Height.ToInt32();
+        public unsafe int Rows => (int) Handle->Height;
 
         [PublicAPI]
-        public unsafe int Columns => _fMat->Length.ToInt32();
+        public unsafe int Columns => (int) Handle->Length;
 
         [PublicAPI]
-        public float this[int row, int column]
+        public unsafe float this[int row, int column]
         {
             get
             {
@@ -64,7 +65,7 @@ namespace Aubio.NET.Vectors
                 if (column < 0 || column >= Columns)
                     throw new ArgumentOutOfRangeException(nameof(column));
 
-                return fmat_get_sample(this, row.ToUInt32(), column.ToUInt32());
+                return fmat_get_sample(Handle, (uint) row, (uint) column);
             }
             set
             {
@@ -74,7 +75,7 @@ namespace Aubio.NET.Vectors
                 if (column < 0 || column >= Columns)
                     throw new ArgumentOutOfRangeException(nameof(column));
 
-                fmat_set_sample(this, value, row.ToUInt32(), column.ToUInt32());
+                fmat_set_sample(Handle, value, (uint) row, (uint) column);
             }
         }
 
@@ -103,7 +104,7 @@ namespace Aubio.NET.Vectors
         }
 
         [PublicAPI]
-        public void Copy([NotNull] FMat target)
+        public unsafe void Copy([NotNull] FMat target)
         {
             if (target == null)
                 throw new ArgumentNullException(nameof(target));
@@ -111,11 +112,11 @@ namespace Aubio.NET.Vectors
             if (target.Rows != Rows || target.Columns != Columns)
                 throw new ArgumentOutOfRangeException(nameof(target));
 
-            fmat_copy(this, target);
+            fmat_copy(Handle, target.Handle);
         }
 
         [PublicAPI]
-        public FVec GetChannel(int row)
+        public unsafe FVec GetChannel(int row)
         {
             if (row < 0 || row >= Rows)
                 throw new ArgumentOutOfRangeException(nameof(row));
@@ -124,7 +125,7 @@ namespace Aubio.NET.Vectors
 
             var output = new FVec(Columns, false);
 
-            fmat_get_channel(this, row.ToUInt32(), output);
+            fmat_get_channel(Handle, row.ToUInt32(), output.Handle);
 
             return output;
         }
@@ -135,41 +136,41 @@ namespace Aubio.NET.Vectors
             if (channel < 0 || channel >= Rows)
                 throw new ArgumentOutOfRangeException(nameof(channel));
 
-            return fmat_get_channel_data(this, channel.ToUInt32());
+            return fmat_get_channel_data(Handle, (uint) channel);
         }
 
         [PublicAPI]
         public unsafe float** GetData()
         {
-            return fmat_get_data(this);
+            return fmat_get_data(Handle);
         }
 
         [PublicAPI]
-        public void Ones()
+        public unsafe void Ones()
         {
-            fmat_ones(this);
+            fmat_ones(Handle);
         }
 
         [PublicAPI]
-        public void Print()
+        public unsafe void Print()
         {
-            fmat_print(this);
+            fmat_print(Handle);
         }
 
         [PublicAPI]
-        public void Rev()
+        public unsafe void Rev()
         {
-            fmat_rev(this);
+            fmat_rev(Handle);
         }
 
         [PublicAPI]
-        public void Set(float value)
+        public unsafe void Set(float value)
         {
-            fmat_set(this, value);
+            fmat_set(Handle, value);
         }
 
         [PublicAPI]
-        public void VecMul([NotNull] FVec scale, [NotNull] FVec output)
+        public unsafe void VecMul([NotNull] FVec scale, [NotNull] FVec output)
         {
             if (scale == null)
                 throw new ArgumentNullException(nameof(scale));
@@ -183,36 +184,36 @@ namespace Aubio.NET.Vectors
             if (output.Length != Rows)
                 throw new ArgumentOutOfRangeException(nameof(output));
 
-            fmat_vecmul(this, scale, output);
+            fmat_vecmul(Handle, scale.Handle, output.Handle);
         }
 
         [PublicAPI]
-        public void Weight([NotNull] FMat weight)
+        public unsafe void Weight([NotNull] FMat weight)
         {
             if (weight == null)
                 throw new ArgumentNullException(nameof(weight));
 
-            fmat_weight(this, weight);
+            fmat_weight(Handle, weight.Handle);
         }
 
         [PublicAPI]
-        public void Zeros()
+        public unsafe void Zeros()
         {
-            fmat_zeros(this);
+            fmat_zeros(Handle);
         }
 
         #endregion
 
         #region Overrides of AubioObject
 
-        protected override void DisposeNative()
+        protected override unsafe void DisposeNative()
         {
-            del_fmat(this);
+            del_fmat(Handle);
         }
 
         internal override unsafe IntPtr ToPointer()
         {
-            return new IntPtr(_fMat);
+            return new IntPtr(Handle);
         }
 
         #endregion
@@ -228,75 +229,75 @@ namespace Aubio.NET.Vectors
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void del_fmat(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FMat fMat
+        private static extern unsafe void del_fmat(
+            FMat__* fMat
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void fmat_copy(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FMat fMat,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FMat target
+        private static extern unsafe void fmat_copy(
+            FMat__* fMat,
+            FMat__* target
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void fmat_get_channel(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FMat fMat,
+        private static extern unsafe void fmat_get_channel(
+            FMat__* fMat,
             uint channel,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec output
+            FVec__* output
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern unsafe float* fmat_get_channel_data(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FMat fMat,
+            FMat__* fMat,
             uint channel
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern unsafe float** fmat_get_data(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FMat fMat
+            FMat__* fMat
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern float fmat_get_sample(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FMat fMat,
+        private static extern unsafe float fmat_get_sample(
+            FMat__* fMat,
             uint channel,
             uint position
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void fmat_ones(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FMat fMat
+        private static extern unsafe void fmat_ones(
+            FMat__* fMat
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void fmat_print(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FMat fMat
+        private static extern unsafe void fmat_print(
+            FMat__* fMat
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void fmat_rev(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FMat fMat
+        private static extern unsafe void fmat_rev(
+            FMat__* fMat
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void fmat_set(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FMat fMat,
+        private static extern unsafe void fmat_set(
+            FMat__* fMat,
             float value
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void fmat_set_sample(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FMat fMat,
+        private static extern unsafe void fmat_set_sample(
+            FMat__* fMat,
             float value,
             uint channel,
             uint position
@@ -304,23 +305,23 @@ namespace Aubio.NET.Vectors
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void fmat_vecmul(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FMat fMat,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec scale,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec output
+        private static extern unsafe void fmat_vecmul(
+            FMat__* fMat,
+            FVec__* scale,
+            FVec__* output
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void fmat_weight(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FMat fMat,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FMat weight
+        private static extern unsafe void fmat_weight(
+            FMat__* fMat,
+            FMat__* weight
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void fmat_zeros(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FMat fMat
+        private static extern unsafe void fmat_zeros(
+            FMat__* fMat
         );
 
         #endregion

@@ -12,82 +12,82 @@ namespace Aubio.NET.Vectors
         {
         }
 
-        public override float this[int index]
+        public override unsafe float this[int index]
         {
             get
             {
                 if (index < 0 || index >= Length)
                     throw new IndexOutOfRangeException();
 
-                return cvec_phas_get_sample(CVec, index.ToUInt32());
+                return cvec_phas_get_sample(CVec.Handle, (uint) index);
             }
             set
             {
                 if (index < 0 || index >= Length)
                     throw new IndexOutOfRangeException();
 
-                cvec_phas_set_sample(CVec, value, index.ToUInt32());
+                cvec_phas_set_sample(CVec.Handle, value, (uint) index);
             }
         }
 
         public override unsafe float* GetData()
         {
-            return cvec_phas_get_data(CVec);
+            return cvec_phas_get_data(CVec.Handle);
         }
 
-        public override void SetAll(float value)
+        public override unsafe void SetAll(float value)
         {
-            cvec_phas_set_all(CVec, value);
+            cvec_phas_set_all(CVec.Handle, value);
         }
 
-        public override void Ones()
+        public override unsafe void Ones()
         {
-            cvec_phas_ones(CVec);
+            cvec_phas_ones(CVec.Handle);
         }
 
-        public override void Zeros()
+        public override unsafe void Zeros()
         {
-            cvec_phas_zeros(CVec);
+            cvec_phas_zeros(CVec.Handle);
         }
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern unsafe float* cvec_phas_get_data(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec cVec
+            CVec__* cVec
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern float cvec_phas_get_sample(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec cVec,
+        private static extern unsafe float cvec_phas_get_sample(
+            CVec__* cVec,
             uint position
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void cvec_phas_ones(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec cVec
+        private static extern unsafe void cvec_phas_ones(
+            CVec__* cVec
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void cvec_phas_set_all(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec cVec,
+        private static extern unsafe void cvec_phas_set_all(
+            CVec__* cVec,
             float value
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void cvec_phas_set_sample(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec cVec,
+        private static extern unsafe void cvec_phas_set_sample(
+            CVec__* cVec,
             float value,
             uint position
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void cvec_phas_zeros(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec cVec
+        private static extern unsafe void cvec_phas_zeros(
+            CVec__* cVec
         );
     }
 }
