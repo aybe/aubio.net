@@ -14,9 +14,10 @@ namespace Aubio.NET.Spectral
     {
         #region Fields
 
+        [PublicAPI]
         [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly unsafe PhaseVocoder__* _vocoder;
+        internal readonly unsafe PhaseVocoder__* Handle;
 
         #endregion
 
@@ -31,30 +32,30 @@ namespace Aubio.NET.Spectral
             if (hopSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(hopSize));
 
-            var vocoder = new_aubio_pvoc(windowSize.ToUInt32(), hopSize.ToUInt32());
-            if (vocoder == null)
-                throw new ArgumentNullException(nameof(vocoder));
+            var handle = new_aubio_pvoc((uint) windowSize, (uint) hopSize);
+            if (handle == null)
+                throw new ArgumentNullException(nameof(handle));
 
-            _vocoder = vocoder;
+            Handle = handle;
         }
 
         [PublicAPI]
-        public int HopSize => aubio_pvoc_get_hop(this).ToInt32();
+        public unsafe int HopSize => (int) aubio_pvoc_get_hop(Handle);
 
         [PublicAPI]
-        public int WindowSize => aubio_pvoc_get_win(this).ToInt32();
+        public unsafe int WindowSize => (int) aubio_pvoc_get_win(Handle);
 
         [PublicAPI]
-        public void AddSynth([NotNull] FVec synth)
+        public unsafe void AddSynth([NotNull] FVec synth)
         {
             if (synth == null)
                 throw new ArgumentNullException(nameof(synth));
 
-            aubio_pvoc_addsynth(this, synth);
+            aubio_pvoc_addsynth(Handle, synth.Handle);
         }
 
         [PublicAPI]
-        public void Do([NotNull] FVec input, [NotNull] CVec fftGrain)
+        public unsafe void Do([NotNull] FVec input, [NotNull] CVec fftGrain)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
@@ -62,11 +63,11 @@ namespace Aubio.NET.Spectral
             if (fftGrain == null)
                 throw new ArgumentNullException(nameof(fftGrain));
 
-            aubio_pvoc_do(this, input, fftGrain);
+            aubio_pvoc_do(Handle, input.Handle, fftGrain.Handle);
         }
 
         [PublicAPI]
-        public void Rdo([NotNull] CVec fftGrain, [NotNull] FVec output)
+        public unsafe void Rdo([NotNull] CVec fftGrain, [NotNull] FVec output)
         {
             if (fftGrain == null)
                 throw new ArgumentNullException(nameof(fftGrain));
@@ -74,40 +75,40 @@ namespace Aubio.NET.Spectral
             if (output == null)
                 throw new ArgumentNullException(nameof(output));
 
-            aubio_pvoc_rdo(this, fftGrain, output);
+            aubio_pvoc_rdo(Handle, fftGrain.Handle, output.Handle);
         }
 
         [PublicAPI]
-        public void SetWindow(FVecWindowType windowType)
+        public unsafe void SetWindow(FVecWindowType windowType)
         {
             var attribute = windowType.GetDescriptionAttribute();
             var window = attribute.Description;
 
-            if (aubio_pvoc_set_window(this, window))
+            if (aubio_pvoc_set_window(Handle, window))
                 throw new ArgumentOutOfRangeException(nameof(windowType));
         }
 
         [PublicAPI]
-        public void SwapBuffers([NotNull] FVec buffer)
+        public unsafe void SwapBuffers([NotNull] FVec buffer)
         {
             if (buffer == null)
                 throw new ArgumentNullException(nameof(buffer));
 
-            aubio_pvoc_swapbuffers(this, buffer);
+            aubio_pvoc_swapbuffers(Handle, buffer.Handle);
         }
 
         #endregion
 
         #region Overrides of AubioObject
 
-        protected override void DisposeNative()
+        protected override unsafe void DisposeNative()
         {
-            del_aubio_pvoc(this);
+            del_aubio_pvoc(Handle);
         }
 
         internal override unsafe IntPtr ToPointer()
         {
-            return new IntPtr(_vocoder);
+            return new IntPtr(Handle);
         }
 
         #endregion
@@ -123,66 +124,58 @@ namespace Aubio.NET.Spectral
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void del_aubio_pvoc(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            PhaseVocoder vocoder
+        private static extern unsafe void del_aubio_pvoc(
+            PhaseVocoder__* vocoder
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_pvoc_do(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            PhaseVocoder vocoder,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec input,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec fftGrain
+        private static extern unsafe void aubio_pvoc_do(
+            PhaseVocoder__* vocoder,
+            FVec__* input,
+            CVec__* fftGrain
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_pvoc_rdo(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            PhaseVocoder vocoder,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec fftGrain,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec output
+        private static extern unsafe void aubio_pvoc_rdo(
+            PhaseVocoder__* vocoder,
+            CVec__* fftGrain,
+            FVec__* output
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern uint aubio_pvoc_get_win(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            PhaseVocoder vocoder
+        private static extern unsafe uint aubio_pvoc_get_win(
+            PhaseVocoder__* vocoder
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern uint aubio_pvoc_get_hop(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            PhaseVocoder vocoder
+        private static extern unsafe uint aubio_pvoc_get_hop(
+            PhaseVocoder__* vocoder
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_pvoc_set_window(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            PhaseVocoder vocoder,
+        private static extern unsafe bool aubio_pvoc_set_window(
+            PhaseVocoder__* vocoder,
             [MarshalAs(UnmanagedType.LPStr)] string window
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_pvoc_swapbuffers(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            PhaseVocoder vocoder,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec buffer
+        private static extern unsafe void aubio_pvoc_swapbuffers(
+            PhaseVocoder__* vocoder,
+            FVec__* buffer
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_pvoc_addsynth(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            PhaseVocoder vocoder,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec synth
+        private static extern unsafe void aubio_pvoc_addsynth(
+            PhaseVocoder__* vocoder,
+            FVec__* synth
         );
 
         #endregion
