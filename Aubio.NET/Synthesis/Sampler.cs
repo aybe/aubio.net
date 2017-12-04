@@ -14,9 +14,10 @@ namespace Aubio.NET.Synthesis
     {
         #region Fields
 
+        [PublicAPI]
         [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly unsafe Sampler__* _sampler;
+        internal readonly unsafe Sampler__* Handle;
 
         #endregion
 
@@ -39,18 +40,18 @@ namespace Aubio.NET.Synthesis
             if (hopSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(hopSize));
 
-            var sampler = new_aubio_sampler(sampleRate.ToUInt32(), hopSize.ToUInt32());
-            if (sampler == null)
-                throw new ArgumentNullException(nameof(sampler));
+            var handle = new_aubio_sampler((uint) sampleRate, (uint) hopSize);
+            if (handle == null)
+                throw new ArgumentNullException(nameof(handle));
 
-            _sampler = sampler;
+            Handle = handle;
         }
 
         [PublicAPI]
-        public bool IsPlaying => aubio_sampler_get_playing(this);
+        public unsafe bool IsPlaying => aubio_sampler_get_playing(Handle);
 
         [PublicAPI]
-        public void Do([NotNull] FVec input, [NotNull] FVec output)
+        public unsafe void Do([NotNull] FVec input, [NotNull] FVec output)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
@@ -58,11 +59,11 @@ namespace Aubio.NET.Synthesis
             if (output == null)
                 throw new ArgumentNullException(nameof(output));
 
-            aubio_sampler_do(this, input, output);
+            aubio_sampler_do(Handle, input.Handle, output.Handle);
         }
 
         [PublicAPI]
-        public void DoMulti([NotNull] FMat input, [NotNull] FMat output)
+        public unsafe void DoMulti([NotNull] FMat input, [NotNull] FMat output)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
@@ -70,42 +71,42 @@ namespace Aubio.NET.Synthesis
             if (output == null)
                 throw new ArgumentNullException(nameof(output));
 
-            aubio_sampler_do_multi(this, input, output);
+            aubio_sampler_do_multi(Handle, input.Handle, output.Handle);
         }
 
         [PublicAPI]
-        public bool Load([NotNull] string uri)
+        public unsafe bool Load([NotNull] string uri)
         {
             if (uri == null)
                 throw new ArgumentNullException(nameof(uri));
 
-            return !aubio_sampler_load(this, uri);
+            return !aubio_sampler_load(Handle, uri);
         }
 
         [PublicAPI]
-        public bool Play()
+        public unsafe bool Play()
         {
-            return !aubio_sampler_play(this);
+            return !aubio_sampler_play(Handle);
         }
 
         [PublicAPI]
-        public bool Stop()
+        public unsafe bool Stop()
         {
-            return !aubio_sampler_stop(this);
+            return !aubio_sampler_stop(Handle);
         }
 
         #endregion
 
         #region Overrides of AubioObject
 
-        protected override void DisposeNative()
+        protected override unsafe void DisposeNative()
         {
-            del_aubio_sampler(this);
+            del_aubio_sampler(Handle);
         }
 
         internal override unsafe IntPtr ToPointer()
         {
-            return new IntPtr(_sampler);
+            return new IntPtr(Handle);
         }
 
         #endregion
@@ -121,53 +122,53 @@ namespace Aubio.NET.Synthesis
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void del_aubio_sampler(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Sampler sampler
+        private static extern unsafe void del_aubio_sampler(
+            Sampler__* sampler
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_sampler_do(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Sampler sampler,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec input,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec output
+        private static extern unsafe void aubio_sampler_do(
+            Sampler__* sampler,
+            FVec__* input,
+            FVec__* output
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_sampler_do_multi(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Sampler sampler,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FMat input,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FMat output
-        );
-
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_sampler_get_playing(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Sampler sampler
+        private static extern unsafe void aubio_sampler_do_multi(
+            Sampler__* sampler,
+            FMat__* input,
+            FMat__* output
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_sampler_load(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Sampler sampler,
+        private static extern unsafe bool aubio_sampler_get_playing(
+            Sampler__* sampler
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern unsafe bool aubio_sampler_load(
+            Sampler__* sampler,
             [MarshalAs(UnmanagedType.LPStr)] string uri
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_sampler_play(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Sampler sampler
+        private static extern unsafe bool aubio_sampler_play(
+            Sampler__* sampler
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_sampler_stop(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Sampler sampler
+        private static extern unsafe bool aubio_sampler_stop(
+            Sampler__* sampler
         );
 
         #endregion
