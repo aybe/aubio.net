@@ -14,9 +14,10 @@ namespace Aubio.NET.Spectral
     {
         #region Fields
 
+        [PublicAPI]
         [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly unsafe TransientSteadyStateSeparation__* _tss;
+        internal readonly unsafe TransientSteadyStateSeparation__* Handle;
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private float _alpha = 3.0f;
@@ -40,20 +41,20 @@ namespace Aubio.NET.Spectral
             if (hopSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(hopSize));
 
-            var tss = new_aubio_tss(bufferSize.ToUInt32(), hopSize.ToUInt32());
-            if (tss == null)
-                throw new ArgumentNullException(nameof(tss));
+            var handle = new_aubio_tss((uint) bufferSize, (uint) hopSize);
+            if (handle == null)
+                throw new ArgumentNullException(nameof(handle));
 
-            _tss = tss;
+            Handle = handle;
         }
 
         [PublicAPI]
-        public float Alpha
+        public unsafe float Alpha
         {
             get => _alpha;
             set
             {
-                if (aubio_tss_set_alpha(this, value))
+                if (aubio_tss_set_alpha(Handle, value))
                     throw new ArgumentOutOfRangeException(nameof(value));
 
                 _alpha = value;
@@ -61,12 +62,12 @@ namespace Aubio.NET.Spectral
         }
 
         [PublicAPI]
-        public float Beta
+        public unsafe float Beta
         {
             get => _beta;
             set
             {
-                if (aubio_tss_set_beta(this, value))
+                if (aubio_tss_set_beta(Handle, value))
                     throw new ArgumentOutOfRangeException(nameof(value));
 
                 _beta = value;
@@ -74,12 +75,12 @@ namespace Aubio.NET.Spectral
         }
 
         [PublicAPI]
-        public float Threshold
+        public unsafe float Threshold
         {
             get => _threshold;
             set
             {
-                if (aubio_tss_set_threshold(this, value))
+                if (aubio_tss_set_threshold(Handle, value))
                     throw new ArgumentOutOfRangeException(nameof(value));
 
                 _threshold = value;
@@ -87,7 +88,7 @@ namespace Aubio.NET.Spectral
         }
 
         [PublicAPI]
-        public void Do([NotNull] CVec input, [NotNull] CVec transient, [NotNull] CVec steady)
+        public unsafe void Do([NotNull] CVec input, [NotNull] CVec transient, [NotNull] CVec steady)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
@@ -98,21 +99,21 @@ namespace Aubio.NET.Spectral
             if (steady == null)
                 throw new ArgumentNullException(nameof(steady));
 
-            aubio_tss_do(this, input, transient, steady);
+            aubio_tss_do(Handle, input.Handle, transient.Handle, steady.Handle);
         }
 
         #endregion
 
         #region Overrides of AubioObject
 
-        protected override void DisposeNative()
+        protected override unsafe void DisposeNative()
         {
-            del_aubio_tss(this);
+            del_aubio_tss(Handle);
         }
 
         internal override unsafe IntPtr ToPointer()
         {
-            return new IntPtr(_tss);
+            return new IntPtr(Handle);
         }
 
         #endregion
@@ -128,45 +129,40 @@ namespace Aubio.NET.Spectral
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void del_aubio_tss(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            TransientSteadyStateSeparation separation
+        private static extern unsafe void del_aubio_tss(
+            TransientSteadyStateSeparation__* separation
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_tss_do(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            TransientSteadyStateSeparation separation,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec input,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec transient,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec steady
+        private static extern unsafe void aubio_tss_do(
+            TransientSteadyStateSeparation__* separation,
+            CVec__* input,
+            CVec__* transient,
+            CVec__* steady
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_tss_set_threshold(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            TransientSteadyStateSeparation separation,
+        private static extern unsafe bool aubio_tss_set_threshold(
+            TransientSteadyStateSeparation__* separation,
             float threshold
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_tss_set_alpha(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            TransientSteadyStateSeparation separation,
+        private static extern unsafe bool aubio_tss_set_alpha(
+            TransientSteadyStateSeparation__* separation,
             float alpha
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_tss_set_beta(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            TransientSteadyStateSeparation separation,
+        private static extern unsafe bool aubio_tss_set_beta(
+            TransientSteadyStateSeparation__* separation,
             float beta
         );
 
