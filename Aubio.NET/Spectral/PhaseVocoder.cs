@@ -106,11 +106,6 @@ namespace Aubio.NET.Spectral
             del_aubio_pvoc(Handle);
         }
 
-        internal override unsafe IntPtr ToPointer()
-        {
-            return new IntPtr(Handle);
-        }
-
         #endregion
 
         #region Native Methods

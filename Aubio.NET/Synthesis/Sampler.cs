@@ -104,11 +104,6 @@ namespace Aubio.NET.Synthesis
             del_aubio_sampler(Handle);
         }
 
-        internal override unsafe IntPtr ToPointer()
-        {
-            return new IntPtr(Handle);
-        }
-
         #endregion
 
         #region Native Methods

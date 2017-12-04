@@ -110,11 +110,6 @@ namespace Aubio.NET.IO
             del_aubio_source(Handle);
         }
 
-        internal override unsafe IntPtr ToPointer()
-        {
-            return new IntPtr(Handle);
-        }
-
         #endregion
 
         #region Native methods

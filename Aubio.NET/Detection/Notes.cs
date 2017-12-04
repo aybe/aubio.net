@@ -98,11 +98,6 @@ namespace Aubio.NET.Detection
             del_aubio_notes(Handle);
         }
 
-        internal override unsafe IntPtr ToPointer()
-        {
-            return new IntPtr(Handle);
-        }
-
         #endregion
 
         #region Native Methods

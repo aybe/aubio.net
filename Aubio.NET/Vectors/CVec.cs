@@ -135,11 +135,6 @@ namespace Aubio.NET.Vectors
             del_cvec(Handle);
         }
 
-        internal override unsafe IntPtr ToPointer()
-        {
-            return new IntPtr(Handle);
-        }
-
         #endregion
 
         #region Native Methods

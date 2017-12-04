@@ -59,9 +59,6 @@ namespace Aubio.NET
             Dispose(false);
         }
 
-        [PublicAPI]
-        internal abstract IntPtr ToPointer();
-
         #region Native side
 
         static AubioObject()

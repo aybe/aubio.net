@@ -165,11 +165,6 @@ namespace Aubio.NET.Spectral
             del_aubio_fft(Handle);
         }
 
-        internal override unsafe IntPtr ToPointer()
-        {
-            return new IntPtr(Handle);
-        }
-
         #endregion
 
         #region Native Methods

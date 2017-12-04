@@ -150,11 +150,6 @@ namespace Aubio.NET.Temporal
             del_aubio_filter(Handle);
         }
 
-        internal override unsafe IntPtr ToPointer()
-        {
-            return new IntPtr(Handle);
-        }
-
         #endregion
 
         #region Native Methods

@@ -66,11 +66,6 @@ namespace Aubio.NET.Temporal
             del_aubio_resampler(Handle);
         }
 
-        internal override unsafe IntPtr ToPointer()
-        {
-            return new IntPtr(Handle);
-        }
-
         #endregion
 
         #region Native Methods
