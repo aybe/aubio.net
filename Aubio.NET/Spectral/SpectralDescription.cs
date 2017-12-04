@@ -15,9 +15,10 @@ namespace Aubio.NET.Spectral
     {
         #region Fields
 
+        [PublicAPI]
         [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly unsafe SpectralDescription__* _specdesc;
+        internal readonly unsafe SpectralDescription__* Handle;
 
         #endregion
 
@@ -37,15 +38,15 @@ namespace Aubio.NET.Spectral
             if (method == null)
                 throw new ArgumentNullException(nameof(method));
 
-            var specdesc = new_aubio_specdesc(method, bufferSize.ToUInt32());
-            if (specdesc == null)
-                throw new ArgumentNullException(nameof(specdesc));
+            var handle = new_aubio_specdesc(method, (uint) bufferSize);
+            if (handle == null)
+                throw new ArgumentNullException(nameof(handle));
 
-            _specdesc = specdesc;
+            Handle = handle;
         }
 
         [PublicAPI]
-        public void Do([NotNull] CVec fftGrain, [NotNull] FVec output)
+        public unsafe void Do([NotNull] CVec fftGrain, [NotNull] FVec output)
         {
             if (fftGrain == null)
                 throw new ArgumentNullException(nameof(fftGrain));
@@ -53,21 +54,21 @@ namespace Aubio.NET.Spectral
             if (output == null)
                 throw new ArgumentNullException(nameof(output));
 
-            aubio_specdesc_do(this, fftGrain, output);
+            aubio_specdesc_do(Handle, fftGrain.Handle, output.Handle);
         }
 
         #endregion
 
         #region Overrides of AubioObject
 
-        protected override void DisposeNative()
+        protected override unsafe void DisposeNative()
         {
-            del_aubio_specdesc(this);
+            del_aubio_specdesc(Handle);
         }
 
         internal override unsafe IntPtr ToPointer()
         {
-            return new IntPtr(_specdesc);
+            return new IntPtr(Handle);
         }
 
         #endregion
@@ -83,18 +84,16 @@ namespace Aubio.NET.Spectral
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void del_aubio_specdesc(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            SpectralDescription description
+        private static extern unsafe void del_aubio_specdesc(
+            SpectralDescription__* description
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_specdesc_do(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            SpectralDescription description,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec fftGrain,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec desc
+        private static extern unsafe void aubio_specdesc_do(
+            SpectralDescription__* description,
+            CVec__* fftGrain,
+            FVec__* desc
         );
 
         #endregion
