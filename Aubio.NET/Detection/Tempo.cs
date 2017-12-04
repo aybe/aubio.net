@@ -13,9 +13,10 @@ namespace Aubio.NET.Detection
     {
         #region Fields
 
+        [PublicAPI]
         [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly unsafe Tempo__* _tempo;
+        internal readonly unsafe Tempo__* Handle;
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private int _tatumSignature = 4;
@@ -24,7 +25,7 @@ namespace Aubio.NET.Detection
 
         #region Implementation of ISampler
 
-        public int SampleRate => aubio_tempo_get_samplerate(this).ToInt32();
+        public unsafe int SampleRate => (int) aubio_tempo_get_samplerate(Handle);
 
         #endregion
 
@@ -45,86 +46,86 @@ namespace Aubio.NET.Detection
             if (sampleRate <= 0)
                 throw new ArgumentOutOfRangeException(nameof(sampleRate));
 
-            var tempo = new_aubio_tempo("default", bufferSize.ToUInt32(), hopSize.ToUInt32(), sampleRate.ToUInt32());
-            if (tempo == null)
-                throw new ArgumentNullException(nameof(tempo));
+            var handle = new_aubio_tempo("default", (uint) bufferSize, (uint) hopSize, (uint) sampleRate);
+            if (handle == null)
+                throw new ArgumentNullException(nameof(handle));
 
-            _tempo = tempo;
+            Handle = handle;
         }
 
         [PublicAPI]
-        public float Bpm => aubio_tempo_get_bpm(this);
+        public unsafe float Bpm => aubio_tempo_get_bpm(Handle);
 
         [PublicAPI]
-        public float Confidence => aubio_tempo_get_confidence(this);
+        public unsafe float Confidence => aubio_tempo_get_confidence(Handle);
 
         [PublicAPI]
-        public Time Delay
+        public unsafe Time Delay
         {
             get
             {
-                var samples = aubio_tempo_get_delay(this);
+                var samples = aubio_tempo_get_delay(Handle);
                 var time = Time.FromSamples(SampleRate, samples);
                 return time;
             }
             set
             {
-                if (aubio_tempo_set_delay(this, value.Samples))
+                if (aubio_tempo_set_delay(Handle, value.Samples))
                     throw new ArgumentOutOfRangeException(nameof(value));
             }
         }
 
         [PublicAPI]
-        public Time Last
+        public unsafe Time Last
         {
             get
             {
-                var samples = aubio_tempo_get_last(this).ToInt32();
+                var samples = aubio_tempo_get_last(Handle);
+                var time = Time.FromSamples(SampleRate, (int) samples);
+                return time;
+            }
+        }
+
+        [PublicAPI]
+        public unsafe Time LastTatum
+        {
+            get
+            {
+                var samples = aubio_tempo_get_last_tatum(Handle);
                 var time = Time.FromSamples(SampleRate, samples);
                 return time;
             }
         }
 
         [PublicAPI]
-        public Time LastTatum
+        public unsafe Time Period
         {
             get
             {
-                var samples = aubio_tempo_get_last_tatum(this);
+                var samples = aubio_tempo_get_period(Handle);
                 var time = Time.FromSamples(SampleRate, samples);
                 return time;
             }
         }
 
         [PublicAPI]
-        public Time Period
+        public unsafe float Silence
         {
-            get
-            {
-                var samples = aubio_tempo_get_period(this);
-                var time = Time.FromSamples(SampleRate, samples);
-                return time;
-            }
-        }
-
-        [PublicAPI]
-        public float Silence
-        {
-            get => aubio_tempo_get_silence(this);
+            get => aubio_tempo_get_silence(Handle);
             set
             {
-                if (aubio_tempo_set_silence(this, value))
+                if (aubio_tempo_set_silence(Handle, value))
                     throw new ArgumentOutOfRangeException(nameof(value));
             }
         }
 
         [PublicAPI]
-        public int TatumSignature
+        public unsafe int TatumSignature
         {
             get => _tatumSignature;
             set
             {
-                if (aubio_tempo_set_tatum_signature(this, value.ToUInt32()))
+                if (aubio_tempo_set_tatum_signature(Handle, (uint) value))
                     throw new ArgumentOutOfRangeException(nameof(value));
 
                 _tatumSignature = value;
@@ -132,21 +133,21 @@ namespace Aubio.NET.Detection
         }
 
         [PublicAPI]
-        public float Threshold
+        public unsafe float Threshold
         {
-            get => aubio_tempo_get_threshold(this);
+            get => aubio_tempo_get_threshold(Handle);
             set
             {
-                if (aubio_tempo_set_threshold(this, value))
+                if (aubio_tempo_set_threshold(Handle, value))
                     throw new ArgumentOutOfRangeException(nameof(value));
             }
         }
 
         [PublicAPI]
-        public TempoTatum WasTatum => aubio_tempo_was_tatum(this);
+        public unsafe TempoTatum WasTatum => aubio_tempo_was_tatum(Handle);
 
         [PublicAPI]
-        public void Do([NotNull] FVec input, [NotNull] FVec output)
+        public unsafe void Do([NotNull] FVec input, [NotNull] FVec output)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
@@ -154,21 +155,21 @@ namespace Aubio.NET.Detection
             if (output == null)
                 throw new ArgumentNullException(nameof(output));
 
-            aubio_tempo_do(this, input, output);
+            aubio_tempo_do(Handle, input.Handle, output.Handle);
         }
 
         #endregion
 
         #region Overrides of AubioObject
 
-        protected override void DisposeNative()
+        protected override unsafe void DisposeNative()
         {
-            del_aubio_tempo(this);
+            del_aubio_tempo(Handle);
         }
 
         internal override unsafe IntPtr ToPointer()
         {
-            return new IntPtr(_tempo);
+            return new IntPtr(Handle);
         }
 
         #endregion
@@ -176,93 +177,93 @@ namespace Aubio.NET.Detection
         #region Native methods
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_tempo_do(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Tempo tempo,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec input,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec output
+        private static extern unsafe void aubio_tempo_do(
+            Tempo__* tempo,
+            FVec__* input,
+            FVec__* output
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern float aubio_tempo_get_bpm(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Tempo tempo
+        private static extern unsafe float aubio_tempo_get_bpm(
+            Tempo__* tempo
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern float aubio_tempo_get_confidence(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Tempo tempo
+        private static extern unsafe float aubio_tempo_get_confidence(
+            Tempo__* tempo
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int aubio_tempo_get_delay(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Tempo tempo
+        private static extern unsafe int aubio_tempo_get_delay(
+            Tempo__* tempo
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern uint aubio_tempo_get_last(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Tempo tempo
+        private static extern unsafe uint aubio_tempo_get_last(
+            Tempo__* tempo
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int aubio_tempo_get_last_tatum(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Tempo tempo
+        private static extern unsafe int aubio_tempo_get_last_tatum(
+            Tempo__* tempo
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int aubio_tempo_get_period(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Tempo tempo
+        private static extern unsafe int aubio_tempo_get_period(
+            Tempo__* tempo
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern float aubio_tempo_get_silence(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Tempo tempo
+        private static extern unsafe float aubio_tempo_get_silence(
+            Tempo__* tempo
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern uint aubio_tempo_get_samplerate(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Tempo tempo
+        private static extern unsafe uint aubio_tempo_get_samplerate(
+            Tempo__* tempo
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern float aubio_tempo_get_threshold(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Tempo tempo
+        private static extern unsafe float aubio_tempo_get_threshold(
+            Tempo__* tempo
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_tempo_set_delay(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Tempo tempo,
+        private static extern unsafe bool aubio_tempo_set_delay(
+            Tempo__* tempo,
             int delay
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_tempo_set_tatum_signature(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Tempo tempo,
+        private static extern unsafe bool aubio_tempo_set_tatum_signature(
+            Tempo__* tempo,
             uint signature
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_tempo_set_silence(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Tempo tempo,
+        private static extern unsafe bool aubio_tempo_set_silence(
+            Tempo__* tempo,
             float silence
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_tempo_set_threshold(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Tempo tempo,
+        private static extern unsafe bool aubio_tempo_set_threshold(
+            Tempo__* tempo,
             float threshold
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern TempoTatum aubio_tempo_was_tatum(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Tempo tempo
+        private static extern unsafe TempoTatum aubio_tempo_was_tatum(
+            Tempo__* tempo
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void del_aubio_tempo(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Tempo tempo
+        private static extern unsafe void del_aubio_tempo(
+            Tempo__* tempo
         );
 
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
