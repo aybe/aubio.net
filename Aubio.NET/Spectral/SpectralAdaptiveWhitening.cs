@@ -14,9 +14,10 @@ namespace Aubio.NET.Spectral
     {
         #region Fields
 
+        [PublicAPI]
         [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly unsafe SpectralAdaptiveWhitening__* _whitening;
+        internal readonly unsafe SpectralAdaptiveWhitening__* Handle;
 
         #endregion
 
@@ -42,63 +43,62 @@ namespace Aubio.NET.Spectral
 
             SampleRate = sampleRate;
 
-            var whitening = new_aubio_spectral_whitening(
-                bufferSize.ToUInt32(), hopSize.ToUInt32(), sampleRate.ToUInt32());
-            if (whitening == null)
-                throw new ArgumentNullException(nameof(whitening));
+            var handle = new_aubio_spectral_whitening((uint) bufferSize, (uint) hopSize, (uint) sampleRate);
+            if (handle == null)
+                throw new ArgumentNullException(nameof(handle));
 
-            _whitening = whitening;
+            Handle = handle;
         }
 
         [PublicAPI]
-        public float Floor
+        public unsafe float Floor
         {
-            get => aubio_spectral_whitening_get_floor(this);
+            get => aubio_spectral_whitening_get_floor(Handle);
             set
             {
-                if (aubio_spectral_whitening_set_floor(this, value))
+                if (aubio_spectral_whitening_set_floor(Handle, value))
                     throw new InvalidOperationException();
             }
         }
 
         [PublicAPI]
-        public float RelaxTime
+        public unsafe float RelaxTime
         {
-            get => aubio_spectral_whitening_get_relax_time(this);
+            get => aubio_spectral_whitening_get_relax_time(Handle);
             set
             {
-                if (aubio_spectral_whitening_set_relax_time(this, value))
+                if (aubio_spectral_whitening_set_relax_time(Handle, value))
                     throw new InvalidOperationException();
             }
         }
 
         [PublicAPI]
-        public void Do([NotNull] CVec fftGrain)
+        public unsafe void Do([NotNull] CVec fftGrain)
         {
             if (fftGrain == null)
                 throw new ArgumentNullException(nameof(fftGrain));
 
-            aubio_spectral_whitening_do(this, fftGrain);
+            aubio_spectral_whitening_do(Handle, fftGrain.Handle);
         }
 
         [PublicAPI]
-        public void Reset()
+        public unsafe void Reset()
         {
-            aubio_spectral_whitening_reset(this);
+            aubio_spectral_whitening_reset(Handle);
         }
 
         #endregion
 
         #region Overrides of AubioObject
 
-        protected override void DisposeNative()
+        protected override unsafe void DisposeNative()
         {
-            del_aubio_spectral_whitening(this);
+            del_aubio_spectral_whitening(Handle);
         }
 
         internal override unsafe IntPtr ToPointer()
         {
-            return new IntPtr(_whitening);
+            return new IntPtr(Handle);
         }
 
         #endregion
@@ -115,56 +115,49 @@ namespace Aubio.NET.Spectral
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void del_aubio_spectral_whitening(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            SpectralAdaptiveWhitening whitening
+        private static extern unsafe void del_aubio_spectral_whitening(
+            SpectralAdaptiveWhitening__* whitening
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_spectral_whitening_do(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            SpectralAdaptiveWhitening whitening,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec fftGrain
+        private static extern unsafe void aubio_spectral_whitening_do(
+            SpectralAdaptiveWhitening__* whitening,
+            CVec__* fftGrain
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern float aubio_spectral_whitening_get_floor(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            SpectralAdaptiveWhitening whitening
+        private static extern unsafe float aubio_spectral_whitening_get_floor(
+            SpectralAdaptiveWhitening__* whitening
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern float aubio_spectral_whitening_get_relax_time(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            SpectralAdaptiveWhitening whitening
+        private static extern unsafe float aubio_spectral_whitening_get_relax_time(
+            SpectralAdaptiveWhitening__* whitening
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_spectral_whitening_set_floor(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            SpectralAdaptiveWhitening whitening,
+        private static extern unsafe bool aubio_spectral_whitening_set_floor(
+            SpectralAdaptiveWhitening__* whitening,
             float floor
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_spectral_whitening_set_relax_time(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            SpectralAdaptiveWhitening whitening,
+        private static extern unsafe bool aubio_spectral_whitening_set_relax_time(
+            SpectralAdaptiveWhitening__* whitening,
             float relaxTime
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_spectral_whitening_reset(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))]
-            SpectralAdaptiveWhitening whitening
+        private static extern unsafe void aubio_spectral_whitening_reset(
+            SpectralAdaptiveWhitening__* whitening
         );
 
         #endregion
