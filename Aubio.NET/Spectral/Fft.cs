@@ -14,9 +14,10 @@ namespace Aubio.NET.Spectral
     {
         #region Fields
 
+        [PublicAPI]
         [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly unsafe Fft__* _fft;
+        internal readonly unsafe Fft__* Handle;
 
         #endregion
 
@@ -28,15 +29,15 @@ namespace Aubio.NET.Spectral
             if (size < 2)
                 throw new ArgumentOutOfRangeException(nameof(size));
 
-            var fft = new_aubio_fft(size.ToUInt32());
-            if (fft == null)
-                throw new ArgumentNullException(nameof(fft));
+            var handle = new_aubio_fft((uint) size);
+            if (handle == null)
+                throw new ArgumentNullException(nameof(handle));
 
-            _fft = fft;
+            Handle = handle;
         }
 
         [PublicAPI]
-        public void Do([NotNull] FVec input, [NotNull] CVec spectrum)
+        public unsafe void Do([NotNull] FVec input, [NotNull] CVec spectrum)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
@@ -44,11 +45,11 @@ namespace Aubio.NET.Spectral
             if (spectrum == null)
                 throw new ArgumentNullException(nameof(spectrum));
 
-            aubio_fft_do(this, input, spectrum);
+            aubio_fft_do(Handle, input.Handle, spectrum.Handle);
         }
 
         [PublicAPI]
-        public void DoComplex([NotNull] FVec input, [NotNull] FVec compspec)
+        public unsafe void DoComplex([NotNull] FVec input, [NotNull] FVec compspec)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
@@ -56,11 +57,11 @@ namespace Aubio.NET.Spectral
             if (compspec == null)
                 throw new ArgumentNullException(nameof(compspec));
 
-            aubio_fft_do_complex(this, input, compspec);
+            aubio_fft_do_complex(Handle, input.Handle, compspec.Handle);
         }
 
         [PublicAPI]
-        public void Rdo([NotNull] CVec spectrum, [NotNull] FVec output)
+        public unsafe void Rdo([NotNull] CVec spectrum, [NotNull] FVec output)
         {
             if (spectrum == null)
                 throw new ArgumentNullException(nameof(spectrum));
@@ -68,11 +69,11 @@ namespace Aubio.NET.Spectral
             if (output == null)
                 throw new ArgumentNullException(nameof(output));
 
-            aubio_fft_rdo(this, spectrum, output);
+            aubio_fft_rdo(Handle, spectrum.Handle, output.Handle);
         }
 
         [PublicAPI]
-        public void RdoComplex([NotNull] FVec compspec, [NotNull] FVec output)
+        public unsafe void RdoComplex([NotNull] FVec compspec, [NotNull] FVec output)
         {
             if (compspec == null)
                 throw new ArgumentNullException(nameof(compspec));
@@ -80,11 +81,11 @@ namespace Aubio.NET.Spectral
             if (output == null)
                 throw new ArgumentNullException(nameof(output));
 
-            aubio_fft_rdo_complex(this, compspec, output);
+            aubio_fft_rdo_complex(Handle, compspec.Handle, output.Handle);
         }
 
         [PublicAPI]
-        public static void GetImag([NotNull] CVec spectrum, [NotNull] FVec compspec)
+        public static unsafe void GetImag([NotNull] CVec spectrum, [NotNull] FVec compspec)
         {
             if (spectrum == null)
                 throw new ArgumentNullException(nameof(spectrum));
@@ -92,11 +93,11 @@ namespace Aubio.NET.Spectral
             if (compspec == null)
                 throw new ArgumentNullException(nameof(compspec));
 
-            aubio_fft_get_imag(spectrum, compspec);
+            aubio_fft_get_imag(spectrum.Handle, compspec.Handle);
         }
 
         [PublicAPI]
-        public static void GetNorm([NotNull] FVec compspec, [NotNull] CVec spectrum)
+        public static unsafe void GetNorm([NotNull] FVec compspec, [NotNull] CVec spectrum)
         {
             if (compspec == null)
                 throw new ArgumentNullException(nameof(compspec));
@@ -104,11 +105,11 @@ namespace Aubio.NET.Spectral
             if (spectrum == null)
                 throw new ArgumentNullException(nameof(spectrum));
 
-            aubio_fft_get_norm(compspec, spectrum);
+            aubio_fft_get_norm(compspec.Handle, spectrum.Handle);
         }
 
         [PublicAPI]
-        public static void GetPhas([NotNull] FVec compspec, [NotNull] CVec spectrum)
+        public static unsafe void GetPhas([NotNull] FVec compspec, [NotNull] CVec spectrum)
         {
             if (compspec == null)
                 throw new ArgumentNullException(nameof(compspec));
@@ -116,11 +117,11 @@ namespace Aubio.NET.Spectral
             if (spectrum == null)
                 throw new ArgumentNullException(nameof(spectrum));
 
-            aubio_fft_get_phas(compspec, spectrum);
+            aubio_fft_get_phas(compspec.Handle, spectrum.Handle);
         }
 
         [PublicAPI]
-        public static void GetReal([NotNull] CVec spectrum, [NotNull] FVec compspec)
+        public static unsafe void GetReal([NotNull] CVec spectrum, [NotNull] FVec compspec)
         {
             if (spectrum == null)
                 throw new ArgumentNullException(nameof(spectrum));
@@ -128,11 +129,11 @@ namespace Aubio.NET.Spectral
             if (compspec == null)
                 throw new ArgumentNullException(nameof(compspec));
 
-            aubio_fft_get_real(spectrum, compspec);
+            aubio_fft_get_real(spectrum.Handle, compspec.Handle);
         }
 
         [PublicAPI]
-        public static void GetRealImag([NotNull] CVec spectrum, [NotNull] FVec compspec)
+        public static unsafe void GetRealImag([NotNull] CVec spectrum, [NotNull] FVec compspec)
         {
             if (spectrum == null)
                 throw new ArgumentNullException(nameof(spectrum));
@@ -140,11 +141,11 @@ namespace Aubio.NET.Spectral
             if (compspec == null)
                 throw new ArgumentNullException(nameof(compspec));
 
-            aubio_fft_get_realimag(spectrum, compspec);
+            aubio_fft_get_realimag(spectrum.Handle, compspec.Handle);
         }
 
         [PublicAPI]
-        public static void GetSpectrum([NotNull] FVec compspec, [NotNull] CVec spectrum)
+        public static unsafe void GetSpectrum([NotNull] FVec compspec, [NotNull] CVec spectrum)
         {
             if (compspec == null)
                 throw new ArgumentNullException(nameof(compspec));
@@ -152,21 +153,21 @@ namespace Aubio.NET.Spectral
             if (spectrum == null)
                 throw new ArgumentNullException(nameof(spectrum));
 
-            aubio_fft_get_spectrum(compspec, spectrum);
+            aubio_fft_get_spectrum(compspec.Handle, spectrum.Handle);
         }
 
         #endregion
 
         #region Overrides of AubioObject
 
-        protected override void DisposeNative()
+        protected override unsafe void DisposeNative()
         {
-            del_aubio_fft(this);
+            del_aubio_fft(Handle);
         }
 
         internal override unsafe IntPtr ToPointer()
         {
-            return new IntPtr(_fft);
+            return new IntPtr(Handle);
         }
 
         #endregion
@@ -181,82 +182,82 @@ namespace Aubio.NET.Spectral
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void del_aubio_fft(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Fft fft
+        private static extern unsafe void del_aubio_fft(
+            Fft__* fft
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_fft_do(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Fft fft,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec input,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec spectrum
+        private static extern unsafe void aubio_fft_do(
+            Fft__* fft,
+            FVec__* input,
+            CVec__* spectrum
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_fft_do_complex(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Fft fft,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec input,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec compspec
+        private static extern unsafe void aubio_fft_do_complex(
+            Fft__* fft,
+            FVec__* input,
+            FVec__* compspec
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_fft_rdo(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Fft fft,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec spectrum,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec output
+        private static extern unsafe void aubio_fft_rdo(
+            Fft__* fft,
+            CVec__* spectrum,
+            FVec__* output
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_fft_rdo_complex(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Fft fft,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec compspec,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec output
+        private static extern unsafe void aubio_fft_rdo_complex(
+            Fft__* fft,
+            FVec__* compspec,
+            FVec__* output
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_fft_get_imag(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec spectrum,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec compspec
+        private static extern unsafe void aubio_fft_get_imag(
+            CVec__* spectrum,
+            FVec__* compspec
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_fft_get_phas(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec compspec,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec spectrum
+        private static extern unsafe void aubio_fft_get_phas(
+            FVec__* compspec,
+            CVec__* spectrum
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_fft_get_norm(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec compspec,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec spectrum
+        private static extern unsafe void aubio_fft_get_norm(
+            FVec__* compspec,
+            CVec__* spectrum
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_fft_get_real(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec spectrum,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec compspec
+        private static extern unsafe void aubio_fft_get_real(
+            CVec__* spectrum,
+            FVec__* compspec
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_fft_get_realimag(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec spectrum,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec compspec
+        private static extern unsafe void aubio_fft_get_realimag(
+            CVec__* spectrum,
+            FVec__* compspec
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_fft_get_spectrum(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec compspec,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] CVec spectrum
+        private static extern unsafe void aubio_fft_get_spectrum(
+            FVec__* compspec,
+            CVec__* spectrum
         );
 
         #endregion
