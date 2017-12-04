@@ -125,7 +125,7 @@ namespace Aubio.NET.Vectors
 
             var output = new FVec(Columns, false);
 
-            fmat_get_channel(Handle, row.ToUInt32(), output.Handle);
+            fmat_get_channel(Handle, (uint) row, output.Handle);
 
             return output;
         }

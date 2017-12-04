@@ -121,9 +121,9 @@ namespace Aubio.NET.Detection
             }
             set
             {
-                var samples = value.Samples.ToUInt32();
+                var samples = value.Samples;
 
-                if (aubio_onset_set_minioi(Handle, samples))
+                if (aubio_onset_set_minioi(Handle, (uint) samples))
                     throw new ArgumentOutOfRangeException(nameof(value));
             }
         }

@@ -22,7 +22,7 @@ namespace Aubio.NET
 
         public static int MillisecondsToSamples(int sampleRate, float milliseconds)
         {
-            var samples = (milliseconds * sampleRate * 0.001f).ToInt32();
+            var samples = (int) (milliseconds * sampleRate * 0.001f);
             return samples;
         }
 
