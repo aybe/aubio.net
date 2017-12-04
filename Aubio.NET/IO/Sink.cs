@@ -14,16 +14,17 @@ namespace Aubio.NET.IO
     {
         #region Fields
 
+        [PublicAPI]
         [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly unsafe Sink__* _sink;
+        internal readonly unsafe Sink__* Handle;
 
         #endregion
 
         #region Implementation of ISampler
 
         [PublicAPI]
-        public int SampleRate => aubio_sink_get_samplerate(this).ToInt32();
+        public unsafe int SampleRate => (int) aubio_sink_get_samplerate(Handle);
 
         #endregion
 
@@ -38,25 +39,25 @@ namespace Aubio.NET.IO
             if (sampleRate < 0)
                 throw new ArgumentOutOfRangeException(nameof(sampleRate));
 
-            var sink = new_aubio_sink(uri, sampleRate.ToUInt32());
-            if (sink == null)
-                throw new ArgumentNullException(nameof(sink));
+            var handle = new_aubio_sink(uri, (uint) sampleRate);
+            if (handle == null)
+                throw new ArgumentNullException(nameof(handle));
 
-            _sink = sink;
+            Handle = handle;
         }
 
         [PublicAPI]
-        public int Channels => aubio_sink_get_channels(this).ToInt32();
+        public unsafe int Channels => (int) aubio_sink_get_channels(Handle);
 
         [PublicAPI]
-        public void Close()
+        public unsafe void Close()
         {
-            if (aubio_sink_close(this))
+            if (aubio_sink_close(Handle))
                 throw new InvalidOperationException();
         }
 
         [PublicAPI]
-        public void Do([NotNull] FVec buffer, int write)
+        public unsafe void Do([NotNull] FVec buffer, int write)
         {
             if (buffer == null)
                 throw new ArgumentNullException(nameof(buffer));
@@ -64,11 +65,11 @@ namespace Aubio.NET.IO
             if (write <= 0)
                 throw new ArgumentOutOfRangeException(nameof(write));
 
-            aubio_sink_do(this, buffer, write.ToUInt32());
+            aubio_sink_do(Handle, buffer.Handle, (uint) write);
         }
 
         [PublicAPI]
-        public void DoMulti([NotNull] FMat buffer, int write)
+        public unsafe void DoMulti([NotNull] FMat buffer, int write)
         {
             if (buffer == null)
                 throw new ArgumentNullException(nameof(buffer));
@@ -76,39 +77,39 @@ namespace Aubio.NET.IO
             if (write <= 0)
                 throw new ArgumentOutOfRangeException(nameof(write));
 
-            aubio_sink_do_multi(this, buffer, write.ToUInt32());
+            aubio_sink_do_multi(Handle, buffer.Handle, (uint) write);
         }
 
         [PublicAPI]
-        public bool PresetChannels(int channels)
+        public unsafe bool PresetChannels(int channels)
         {
             if (channels <= 0)
                 throw new ArgumentOutOfRangeException(nameof(channels));
 
-            return !aubio_sink_preset_channels(this, channels.ToUInt32());
+            return !aubio_sink_preset_channels(Handle, (uint) channels);
         }
 
         [PublicAPI]
-        public bool PresetSampleRate(int sampleRate)
+        public unsafe bool PresetSampleRate(int sampleRate)
         {
             if (sampleRate <= 0)
                 throw new ArgumentOutOfRangeException(nameof(sampleRate));
 
-            return !aubio_sink_preset_samplerate(this, sampleRate.ToUInt32());
+            return !aubio_sink_preset_samplerate(Handle, (uint) sampleRate);
         }
 
         #endregion
 
         #region Overrides of AubioObject
 
-        protected override void DisposeNative()
+        protected override unsafe void DisposeNative()
         {
-            del_aubio_sink(this);
+            del_aubio_sink(Handle);
         }
 
         internal override unsafe IntPtr ToPointer()
         {
-            return new IntPtr(_sink);
+            return new IntPtr(Handle);
         }
 
         #endregion
@@ -124,58 +125,58 @@ namespace Aubio.NET.IO
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void del_aubio_sink(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Sink sink
+        private static extern unsafe void del_aubio_sink(
+            Sink__* sink
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_sink_close(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Sink sink
+        private static extern unsafe bool aubio_sink_close(
+            Sink__* sink
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_sink_do(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Sink sink,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec buffer,
+        private static extern unsafe void aubio_sink_do(
+            Sink__* sink,
+            FVec__* buffer,
             uint write
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_sink_do_multi(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Sink sink,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FMat buffer,
+        private static extern unsafe void aubio_sink_do_multi(
+            Sink__* sink,
+            FMat__* buffer,
             uint write
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern uint aubio_sink_get_channels(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Sink sink
+        private static extern unsafe uint aubio_sink_get_channels(
+            Sink__* sink
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern uint aubio_sink_get_samplerate(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Sink sink
+        private static extern unsafe uint aubio_sink_get_samplerate(
+            Sink__* sink
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_sink_preset_channels(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Sink sink,
+        private static extern unsafe bool aubio_sink_preset_channels(
+            Sink__* sink,
             uint channels
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_sink_preset_samplerate(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Sink sink,
+        private static extern unsafe bool aubio_sink_preset_samplerate(
+            Sink__* sink,
             uint sampleRate
         );
 
