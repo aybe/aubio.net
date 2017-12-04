@@ -14,18 +14,16 @@ namespace Aubio.NET.Detection
     {
         #region Fields
 
+        [PublicAPI]
         [NotNull]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly unsafe Notes__* _notes;
-
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly int _sampleRate;
+        internal readonly unsafe Notes__* Handle;
 
         #endregion
 
         #region Implementation of ISampler
 
-        public int SampleRate => _sampleRate;
+        public int SampleRate { get; }
 
         #endregion
 
@@ -43,44 +41,44 @@ namespace Aubio.NET.Detection
             if (sampleRate <= 0)
                 throw new ArgumentOutOfRangeException(nameof(sampleRate));
             
-            _sampleRate = sampleRate;
+            SampleRate = sampleRate;
 
-            var notes = new_aubio_notes("default", bufferSize.ToUInt32(), hopSize.ToUInt32(), sampleRate.ToUInt32());
-            if (notes == null)
-                throw new ArgumentNullException(nameof(notes));
+            var handle = new_aubio_notes("default", (uint) bufferSize, (uint) hopSize, (uint) sampleRate);
+            if (handle == null)
+                throw new ArgumentNullException(nameof(handle));
 
-            _notes = notes;
+            Handle = handle;
         }
 
         [PublicAPI]
-        public Time MinimumInterOnsetInterval
+        public unsafe Time MinimumInterOnsetInterval
         {
             get
             {
-                var milliseconds = aubio_notes_get_minioi_ms(this);
-                var time = Time.FromMilliseconds(_sampleRate, milliseconds);
+                var milliseconds = aubio_notes_get_minioi_ms(Handle);
+                var time = Time.FromMilliseconds(SampleRate, milliseconds);
                 return time;
             }
             set
             {
-                if (aubio_notes_set_minioi_ms(this, value.Milliseconds))
+                if (aubio_notes_set_minioi_ms(Handle, value.Milliseconds))
                     throw new ArgumentOutOfRangeException(nameof(value));
             }
         }
 
         [PublicAPI]
-        public float Silence
+        public unsafe float Silence
         {
-            get => aubio_notes_get_silence(this);
+            get => aubio_notes_get_silence(Handle);
             set
             {
-                if (aubio_notes_set_silence(this, value))
+                if (aubio_notes_set_silence(Handle, value))
                     throw new ArgumentOutOfRangeException(nameof(value));
             }
         }
 
         [PublicAPI]
-        public void Do([NotNull] FVec input, [NotNull] FVec output)
+        public unsafe void Do([NotNull] FVec input, [NotNull] FVec output)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
@@ -88,21 +86,21 @@ namespace Aubio.NET.Detection
             if (output == null)
                 throw new ArgumentNullException(nameof(output));
 
-            aubio_notes_do(this, input, output);
+            aubio_notes_do(Handle, input.Handle, output.Handle);
         }
 
         #endregion
 
         #region Overrides of AubioObject
 
-        protected override void DisposeNative()
+        protected override unsafe void DisposeNative()
         {
-            del_aubio_notes(this);
+            del_aubio_notes(Handle);
         }
 
         internal override unsafe IntPtr ToPointer()
         {
-            return new IntPtr(_notes);
+            return new IntPtr(Handle);
         }
 
         #endregion
@@ -120,43 +118,43 @@ namespace Aubio.NET.Detection
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void del_aubio_notes(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Notes notes
+        private static extern unsafe void del_aubio_notes(
+            Notes__* notes
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void aubio_notes_do(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Notes notes,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec input,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] FVec output
+        private static extern unsafe void aubio_notes_do(
+            Notes__* notes,
+            FVec__* input,
+            FVec__* output
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern float aubio_notes_get_minioi_ms(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Notes notes
+        private static extern unsafe float aubio_notes_get_minioi_ms(
+            Notes__* notes
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
-        private static extern float aubio_notes_get_silence(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Notes notes
+        private static extern unsafe float aubio_notes_get_silence(
+            Notes__* notes
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_notes_set_minioi_ms(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Notes notes,
+        private static extern unsafe bool aubio_notes_set_minioi_ms(
+            Notes__* notes,
             float minioi
         );
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool aubio_notes_set_silence(
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(AubioObjectMarshaler))] Notes notes,
+        private static extern unsafe bool aubio_notes_set_silence(
+            Notes__* notes,
             float silence
         );
 
