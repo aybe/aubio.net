@@ -190,6 +190,116 @@ namespace Aubio.NET.Vectors
             fvec_weighted_copy(Handle, weight.Handle, output.Handle);
         }
 
+        [PublicAPI]
+        public unsafe float DbSpl()
+        {
+            return aubio_db_spl(Handle);
+        }
+
+        [PublicAPI]
+        public unsafe float LevelDetection(float threshold)
+        {
+            return aubio_level_detection(Handle, threshold);
+        }
+
+        [PublicAPI]
+        public unsafe float LevelLin()
+        {
+            return aubio_level_lin(Handle);
+        }
+
+        [PublicAPI]
+        public unsafe bool SilenceDetection(float threshold)
+        {
+            return aubio_silence_detection(Handle, threshold);
+        }
+
+        [PublicAPI]
+        public unsafe float ZeroCrossingRate()
+        {
+            return aubio_zero_crossing_rate(Handle);
+        }
+
+        [PublicAPI]
+        public unsafe void Abs()
+        {
+            fvec_abs(Handle);
+        }
+
+        [PublicAPI]
+        public unsafe void Ceil()
+        {
+            fvec_ceil(Handle);
+        }
+
+        public unsafe float Clamp(float absmax)
+        {
+            return fvec_clamp(Handle, absmax);
+        }
+
+        [PublicAPI]
+        public unsafe void Cos()
+        {
+            fvec_cos(Handle);
+        }
+
+        [PublicAPI]
+        public unsafe void Exp()
+        {
+            fvec_exp(Handle);
+        }
+
+        [PublicAPI]
+        public unsafe void Floor()
+        {
+            fvec_floor(Handle);
+        }
+
+        [PublicAPI]
+        public unsafe void Log()
+        {
+            fvec_log(Handle);
+        }
+
+        [PublicAPI]
+        public unsafe void Log10()
+        {
+            fvec_log10(Handle);
+        }
+
+        [PublicAPI]
+        public unsafe void Pow(float pow)
+        {
+            fvec_pow(Handle, pow);
+        }
+
+        [PublicAPI]
+        public unsafe void Round()
+        {
+            fvec_round(Handle);
+        }
+
+        public unsafe void SetWindowType(FVecWindowType windowType)
+        {
+            var attribute = windowType.GetDescriptionAttribute();
+            var description = attribute.Description;
+
+            if (fvec_set_window(Handle, description))
+                throw new ArgumentOutOfRangeException(nameof(windowType));
+        }
+
+        [PublicAPI]
+        public unsafe void Sin()
+        {
+            fvec_sin(Handle);
+        }
+
+        [PublicAPI]
+        public unsafe void Sqrt()
+        {
+            fvec_sqrt(Handle);
+        }
+
         #endregion
 
         #region Overrides of AubioObject
@@ -293,6 +403,121 @@ namespace Aubio.NET.Vectors
         [SuppressUnmanagedCodeSecurity]
         [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
         private static extern unsafe void fvec_zeros(
+            FVec__* fVec
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe float aubio_db_spl(
+            FVec__* fVec
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe float aubio_level_detection(
+            FVec__* fVec,
+            float threshold
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe float aubio_level_lin(
+            FVec__* fVec
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern unsafe bool aubio_silence_detection(
+            FVec__* fVec,
+            float threshold
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe float aubio_zero_crossing_rate(
+            FVec__* fVec
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe void fvec_abs(
+            FVec__* fVec
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe void fvec_ceil(
+            FVec__* fVec
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe float fvec_clamp(
+            FVec__* fVec,
+            float absmax
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe void fvec_cos(
+            FVec__* fVec
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe void fvec_exp(
+            FVec__* fVec
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe void fvec_floor(
+            FVec__* fVec
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe void fvec_log(
+            FVec__* fVec
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe void fvec_log10(
+            FVec__* fVec
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe void fvec_pow(
+            FVec__* fVec,
+            float pow
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe void fvec_round(
+            FVec__* fVec
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern unsafe bool fvec_set_window(
+            FVec__* fVec,
+            [MarshalAs(UnmanagedType.LPStr)] string windowType
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe void fvec_sin(
+            FVec__* fVec
+        );
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("aubio", CallingConvention = CallingConvention.Cdecl)]
+        private static extern unsafe void fvec_sqrt(
             FVec__* fVec
         );
 
