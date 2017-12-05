@@ -21,7 +21,19 @@ This branch has the latest changes:
 
 ### UWP
 
+#### Referencing the library
+
 Since Aubio.NET is a .NET Standard 2.0 library, your application must target FCU, see https://blogs.msdn.microsoft.com/dotnet/2017/08/25/uwp-net-standard-2-0-preview/.
+
+#### File access
+
+There is a big catch in using aubio for analyzing files from within UWP apps. The native libraries (libav, libsndfile ...) do open files with functions like `fopen`, but these methods will be granted with a `Permission denied` error message whenever you try to open a file in, say, your 'Music' library.
+
+This is because some of the I/O APIs are forbid to execute in arbitrary locations. The 'official', always-working way is `StorageFile` but obviously it is unknown to aubio. A serious fix would be to have user-defined I/O callbacks available in aubio, but this is highly unlikely anytime soon as it would require significant rework in the library.
+
+Long story short,
+
+The most affordable and readily available fix is *simply* to copy the file you want to open with `Aubio.NET.IO.Source` to a location that does not have these restrictions such as `ApplicationData.Current.LocalFolder` or `ApplicationData.Current.TemporaryFolder` as laid out [in the following example](https://github.com/Microsoft/DirectXTK/wiki/DDSTextureLoader#windows-store-apps). Similarly, for `Aubio.NET.IO.Sink` you will want to write to such location first, then *move* the file to another location.
 
 ---
 
