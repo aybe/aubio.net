@@ -15,7 +15,7 @@ namespace Aubio.NET
             if (sampleRate <= 0)
                 throw new ArgumentOutOfRangeException(nameof(sampleRate));
 
-            if (samples <= 0)
+            if (samples < 0)
                 throw new ArgumentOutOfRangeException(nameof(samples));
 
             Samples = samples;

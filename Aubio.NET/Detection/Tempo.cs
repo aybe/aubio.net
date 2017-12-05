@@ -25,7 +25,7 @@ namespace Aubio.NET.Detection
 
         #region Implementation of ISampler
 
-        public unsafe int SampleRate => (int) aubio_tempo_get_samplerate(Handle);
+        public int SampleRate { get; }
 
         #endregion
 
@@ -45,6 +45,8 @@ namespace Aubio.NET.Detection
 
             if (sampleRate <= 0)
                 throw new ArgumentOutOfRangeException(nameof(sampleRate));
+
+            SampleRate = sampleRate;
 
             var handle = new_aubio_tempo("default", (uint) bufferSize, (uint) hopSize, (uint) sampleRate);
             if (handle == null)
