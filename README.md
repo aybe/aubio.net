@@ -37,7 +37,7 @@ The most affordable and readily available fix is *simply* to copy the file you w
 
 #### UI responsiveness
 
-In addition to the previous section, the operating system can feel to terminate a store-published application whenever it feels its UI is too sluggish. Addressing such issue is typically done using `await Task.Run(() => { /* your work */ });`, preferably with cancellation and progress reporting for a good UX.
+In addition to the previous section, the operating system can terminate a store-published application whenever it feels its UI is too sluggish. Addressing such issue is typically done using `await Task.Run(() => { /* your work */ });`, preferably with cancellation and progress reporting for a good UX.
 
 ---
 
