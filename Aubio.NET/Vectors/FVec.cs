@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
 using JetBrains.Annotations;
@@ -116,6 +117,26 @@ namespace Aubio.NET.Vectors
                 throw new ArgumentNullException(nameof(handle));
 
             Handle = handle;
+        }
+
+        [PublicAPI]
+        public unsafe FVec([NotNull] IEnumerable<float> collection)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+
+            var array = collection.ToArray();
+
+            var handle = new_fvec((uint) array.Length);
+            if (handle == null)
+                throw new ArgumentNullException(nameof(handle));
+
+            Handle = handle;
+
+            for (var i = 0; i < Length; i++)
+            {
+                this[i] = array[i];
+            }
         }
 
         [PublicAPI]
