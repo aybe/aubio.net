@@ -33,7 +33,7 @@ This is because some of the I/O APIs are forbid to execute in arbitrary location
 
 Long story short,
 
-The most affordable and readily available fix is *simply* to copy the file you want to open with `Aubio.NET.IO.Source` to a location that does not have these restrictions such as `ApplicationData.Current.LocalFolder` or `ApplicationData.Current.TemporaryFolder` as laid out [in the following example](https://github.com/Microsoft/DirectXTK/wiki/DDSTextureLoader#windows-store-apps). Similarly, for `Aubio.NET.IO.Sink` you will want to write to such location first, then *move* the file to another location. In other terms, this the concept of *temporary file*.
+The most affordable and readily available fix is *simply* to copy the file you want to open with `Aubio.NET.IO.Source` to a location that does not have these restrictions such as `ApplicationData.Current.LocalFolder` or `ApplicationData.Current.TemporaryFolder` as laid out [in the following example](https://github.com/Microsoft/DirectXTK/wiki/DDSTextureLoader#windows-store-apps). Similarly, for `Aubio.NET.IO.Sink` you will want to write to such location first, then *move* the file to another location. In other terms, this is the concept of *temporary file*.
 
 #### UI responsiveness
 
