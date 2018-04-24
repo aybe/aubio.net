@@ -61,6 +61,8 @@ namespace Aubio.NET
 
         #region Native side
 
+#if ANYCPU_LOADING_STRATEGY
+
         static AubioObject()
         {
             // add DLLs directory according current configuration
@@ -118,6 +120,7 @@ namespace Aubio.NET
                     throw new Win32Exception();
             }
         }
+#endif
 
         #endregion
     }
