@@ -24,3 +24,5 @@ To build aubio for your platform using vcpkg,
 Linked dependencies for examples have been moved inside the repo but they're not committed, download them from https://github.com/aybe/aubio.net/releases/tag/deps and unzip them at root directory.
 
 The mechanism that automatically loads dependencies for AnyCPU in x86/x64 subfolders is now opt-in through `ANYCPU_LOADING_STRATEGY` define. This restores the default platform behavior and removes Windows-specific calls, it might be enabled again at some point, once a multi-platform mechanism is in place (Linux/Mac devs are welcome to improve this).
+
+Note that the `Aubio` class library in the solution is deprecated and will be removed at some point, the `Aubio.NET` class library is the one to use.
