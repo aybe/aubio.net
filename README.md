@@ -17,10 +17,6 @@ To build aubio for your platform using vcpkg,
 - follow installation instructions in their README
 - then `vcpkg install aubio` (or whatever else platform, see the command-line options)
 
-## Examples
-https://github.com/aybe/aubio.net/blob/master/Aubio.TestApp.Desktop/Program.cs
-https://github.com/aybe/aubio.net/blob/master/Aubio.TestApp.Universal/MainPage.xaml.cs
-
 ## Latest changes
 
 4/24/2018
